@@ -5,14 +5,22 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="471.0" prefWidth="647.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.drools.MainController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="471.0" prefWidth="647.0" style="-fx-background-color: aqua;" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.drools.MainController">
    <children>
-      <Button layoutX="231.0" layoutY="83.0" mnemonicParsing="false" onMouseClicked="#test" prefHeight="72.0" prefWidth="185.0" text="Testuj" />
+      <Button fx:id="black" layoutX="114.0" layoutY="99.0" mnemonicParsing="false" prefHeight="46.0" prefWidth="117.0" style="-fx-background-color: BLACK;" text="CZARNE" textFill="WHITE" />
       <Label layoutX="306.0" layoutY="304.0" />
-      <Label fx:id="label" layoutX="273.0" layoutY="272.0" text="Label" textFill="RED">
+      <Label fx:id="label" layoutX="145.0" layoutY="304.0" text="Label" textFill="RED">
          <font>
             <Font size="43.0" />
          </font>
       </Label>
+      <Label layoutX="98.0" layoutY="28.0" text="Które gówno? (wybierając coś definiujesz fakt)" textFill="RED">
+         <font>
+            <Font size="24.0" />
+         </font>
+      </Label>
+      <Button fx:id="brown" layoutX="265.0" layoutY="99.0" mnemonicParsing="false" prefHeight="46.0" prefWidth="117.0" style="-fx-background-color: #8B4513;" text="BRĄZOWE" textFill="WHITE" />
+      <Button fx:id="white" layoutX="419.0" layoutY="99.0" mnemonicParsing="false" prefHeight="46.0" prefWidth="117.0" style="-fx-background-color: white;" text="BIAŁE" />
+      <Button layoutX="273.0" layoutY="205.0" mnemonicParsing="false" onMouseClicked="#check" text="Sprawdź!" />
    </children>
 </AnchorPane>

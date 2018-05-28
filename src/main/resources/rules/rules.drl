@@ -1,8 +1,25 @@
 package com.drools;
-rule "Hello World"
-when
-helloWorldObject: HelloWorld()
-then
-helloWorldObject.showMessage();
-System.out.print(" from Drools!");
-end
+
+rule "Brazowe gowno"
+    when
+        messageObject: Message()
+        gownoObject: Gowno(kolor=="brazowy")
+    then
+        messageObject.setPrintMessage("Gowno jest brazowe");
+     end
+
+rule "Czarne gowno"
+    when
+        messageObject: Message()
+        gownoObject: Gowno(kolor=="czarny")
+    then
+        messageObject.setPrintMessage("Gowno jest czarne");
+     end
+
+rule "Biale gowno"
+    when
+        messageObject: Message()
+        gownoObject: Gowno(kolor=="biały")
+    then
+        messageObject.setPrintMessage("Gowno jest białe");
+     end
