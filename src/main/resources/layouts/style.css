@@ -1,0 +1,71 @@
+.background {
+    -fx-background-image: url("../images/background.jpg");
+    -fx-background-repeat: stretch;
+    -fx-background-size: 952 600;
+    -fx-background-position: center center;
+}
+
+.exitButton:hover{
+
+    -fx-text-fill: red;
+    -fx-fill: red;
+
+
+}
+.jfx-hamburger:hover {
+    -fx-background-color: red;
+}
+
+.jfx-hamburger StackPane {
+    -fx-background-color: white;
+}
+
+
+
+.chooseButton {
+    -fx-background-color: red;
+
+    -fx-text-fill: white;
+    -fx-fill: white;
+
+
+}
+.applyButton {
+    -fx-background-color: blue;
+
+    -fx-text-fill: white;
+    -fx-fill: white;
+
+
+}
+.applyButton:hover {
+    -fx-background-color: greenyellow;
+
+    -fx-text-fill: white;
+    -fx-fill: white;
+
+
+}
+.minimze:hover {
+    -fx-text-fill: red;
+    -fx-fill: red;
+    -fx-background-radius : 15px;
+
+}
+.locationField {
+
+    -fx-text-fill: white;
+    -fx-fill: white;
+    -fx-prompt-text-fill: white;
+
+}
+.chooseButton:hover {
+    -fx-background-color: blue;
+    -fx-text-fill: white;
+    -fx-fill: white;
+
+}
+
+.text-area {
+    -fx-text-alignment: center;
+}

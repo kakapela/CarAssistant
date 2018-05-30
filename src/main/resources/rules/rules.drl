@@ -1,11 +1,16 @@
 package com.drools;
 
+import javafx.scene.control.Button;
+
+global javafx.scene.control.Button whiteButton
+
 rule "Brazowe gowno"
     when
         messageObject: Message()
         gownoObject: Gowno(kolor=="brazowy")
     then
         messageObject.setPrintMessage("Gowno jest brazowe");
+        whiteButton.setText("SZTUCZKA");
      end
 
 rule "Czarne gowno"

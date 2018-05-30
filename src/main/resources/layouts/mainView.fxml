@@ -1,26 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXRadioButton?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="471.0" prefWidth="647.0" style="-fx-background-color: aqua;" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.drools.MainController">
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="952.0" styleClass="background" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.drools.MainController">
    <children>
-      <Button fx:id="black" layoutX="114.0" layoutY="99.0" mnemonicParsing="false" prefHeight="46.0" prefWidth="117.0" style="-fx-background-color: BLACK;" text="CZARNE" textFill="WHITE" />
-      <Label layoutX="306.0" layoutY="304.0" />
-      <Label fx:id="label" layoutX="145.0" layoutY="304.0" text="Label" textFill="RED">
+      <Label layoutX="14.0" text="CarAssistant" textFill="WHITE">
          <font>
-            <Font size="43.0" />
+            <Font name="Bodoni MT Condensed" size="68.0" />
          </font>
       </Label>
-      <Label layoutX="98.0" layoutY="28.0" text="Które gówno? (wybierając coś definiujesz fakt)" textFill="RED">
+      <Label layoutX="14.0" layoutY="82.0" text="Choose your perfect classic car" textFill="WHITE">
          <font>
-            <Font size="24.0" />
+            <Font size="26.0" />
          </font>
       </Label>
-      <Button fx:id="brown" layoutX="265.0" layoutY="99.0" mnemonicParsing="false" prefHeight="46.0" prefWidth="117.0" style="-fx-background-color: #8B4513;" text="BRĄZOWE" textFill="WHITE" />
-      <Button fx:id="white" layoutX="419.0" layoutY="99.0" mnemonicParsing="false" prefHeight="46.0" prefWidth="117.0" style="-fx-background-color: white;" text="BIAŁE" />
-      <Button layoutX="273.0" layoutY="205.0" mnemonicParsing="false" onMouseClicked="#check" text="Sprawdź!" />
+      <AnchorPane layoutX="36.0" layoutY="235.0" prefHeight="293.0" prefWidth="872.0" style="-fx-background-color: white; -fx-background-radius: 20;">
+         <children>
+            <JFXRadioButton layoutX="6.0" layoutY="6.0" prefHeight="35.0" prefWidth="423.0" text="Reliability and convenience bore me">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </JFXRadioButton>
+            <JFXRadioButton layoutX="6.0" layoutY="111.0" prefHeight="35.0" prefWidth="434.0" text="I prefer the style">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </JFXRadioButton>
+            <JFXRadioButton layoutX="6.0" layoutY="76.0" prefHeight="35.0" prefWidth="434.0" text="I guess I'm making some kind of statement about something?">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </JFXRadioButton>
+            <JFXRadioButton layoutX="6.0" layoutY="146.0" prefHeight="35.0" prefWidth="434.0" text="Love speed, hate safety">
+               <font>
+                  <Font size="17.0" />
+               </font>
+            </JFXRadioButton>
+            <JFXRadioButton layoutX="6.0" layoutY="41.0" prefHeight="35.0" prefWidth="434.0" text="New cars have no soul">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </JFXRadioButton>
+         </children>
+      </AnchorPane>
+      <AnchorPane layoutX="111.0" layoutY="136.0" prefHeight="82.0" prefWidth="753.0" style="-fx-background-color: white; -fx-background-radius: 20;">
+         <children>
+            <Label alignment="CENTER" layoutX="-1.0" layoutY="22.0" prefHeight="34.0" prefWidth="753.0" text="WHY DO YOU WANT A CLASSIC?" textFill="#5e00ff">
+               <font>
+                  <Font size="23.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+      <JFXButton layoutX="424.0" layoutY="542.0" prefHeight="31.0" prefWidth="127.0" styleClass="chooseButton" stylesheets="@style.css" text="Next" />
    </children>
 </AnchorPane>

@@ -27,6 +27,19 @@
         <runtime.version>6.5.0.Final</runtime.version>
     </properties>
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/de.jensd/fontawesomefx -->
+        <dependency>
+            <groupId>de.jensd</groupId>
+            <artifactId>fontawesomefx</artifactId>
+            <version>8.9</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.jfoenix/jfoenix -->
+        <dependency>
+            <groupId>com.jfoenix</groupId>
+            <artifactId>jfoenix</artifactId>
+            <version>8.0.2</version>
+        </dependency>
     <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-api</artifactId>
