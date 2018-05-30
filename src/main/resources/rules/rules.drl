@@ -1,30 +1,26 @@
 package com.drools;
 
-import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXRadioButton;
 
-global javafx.scene.control.Button whiteButton
+global com.jfoenix.controls.JFXRadioButton choice1
+global com.jfoenix.controls.JFXRadioButton choice2
+global com.jfoenix.controls.JFXRadioButton choice3
+global com.jfoenix.controls.JFXRadioButton choice4
+global com.jfoenix.controls.JFXRadioButton choice5
+global com.jfoenix.controls.JFXRadioButton choice6
+global com.jfoenix.controls.JFXRadioButton choice7
+global com.jfoenix.controls.JFXRadioButton choice8
+global com.jfoenix.controls.JFXRadioButton choice9
+global com.jfoenix.controls.JFXRadioButton choice10
+global com.jfoenix.controls.JFXRadioButton choice11
+global com.jfoenix.controls.JFXRadioButton choice12
+global com.jfoenix.controls.JFXButton nextButton
+global javafx.scene.control.Label question
 
-rule "Brazowe gowno"
+rule "To sie uruchomi na poczatku aplikacji - testowa regula"
     when
-        messageObject: Message()
-        gownoObject: Gowno(kolor=="brazowy")
     then
-        messageObject.setPrintMessage("Gowno jest brazowe");
-        whiteButton.setText("SZTUCZKA");
-     end
-
-rule "Czarne gowno"
-    when
-        messageObject: Message()
-        gownoObject: Gowno(kolor=="czarny")
-    then
-        messageObject.setPrintMessage("Gowno jest czarne");
-     end
-
-rule "Biale gowno"
-    when
-        messageObject: Message()
-        gownoObject: Gowno(kolor=="biały")
-    then
-        messageObject.setPrintMessage("Gowno jest białe");
-     end
+        choice5.setSelected(true);
+end
