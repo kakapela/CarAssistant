@@ -1,10 +1,12 @@
 package com.drools;
 
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -27,40 +29,49 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
-import org.kie.api.KieServices;
-import org.kie.api.runtime.KieContainer;
-import org.kie.api.runtime.KieSession;
 
-public class PetStoreExample {
+import org.drools.core.marshalling.impl.ProtobufMessages;
+import org.kie.api.io.ResourceType;
+import org.kie.internal.KnowledgeBase;
+import org.kie.internal.KnowledgeBaseFactory;
+import org.kie.internal.builder.KnowledgeBuilder;
+import org.kie.internal.builder.KnowledgeBuilderConfiguration;
+import org.kie.internal.builder.KnowledgeBuilderFactory;
+import org.kie.internal.builder.conf.DumpDirOption;
+import org.kie.internal.io.ResourceFactory;
+import org.kie.internal.runtime.StatefulKnowledgeSession;
+
+public class PetStore {
 
     public static void main(String[] args) {
-        // KieServices is the factory for all KIE services
-        KieServices ks = KieServices.Factory.get();
+        try {
+            KnowledgeBuilderConfiguration conf = KnowledgeBuilderFactory.newKnowledgeBuilderConfiguration();
+            conf.setOption(DumpDirOption.get(new File("/home/kverlaen/NotBackedUp/development/drools/drools-examples/drools-examples-drl/dump")));
+            KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder(conf);
 
-        // From the kie services, a container is created from the classpath
-        KieContainer kc = ks.getKieClasspathContainer();
+            kbuilder.add(ResourceFactory.newClassPathResource("rules/rules.drl",
+                    PetStore.class),
+                    ResourceType.DRL);
+            KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
+            kbase.addKnowledgePackages(kbuilder.getKnowledgePackages());
 
-        new PetStoreExample().init(kc, true);
-    }
+            //RuleB
+            Vector<Product> stock = new Vector<Product>();
+            stock.add(new Product("Gold Fish",
+                    5));
+            stock.add(new Product("Fish Tank",
+                    25));
+            stock.add(new Product("Fish Food",
+                    2));
 
-    public PetStoreExample() {
-    }
-
-    public void init(KieContainer kc, boolean exitOnClose) {
-        //RuleB
-        Vector<Product> stock = new Vector<Product>();
-        stock.add( new Product( "Gold Fish",
-                5 ) );
-        stock.add( new Product( "Fish Tank",
-                25 ) );
-        stock.add( new Product( "Fish Food",
-                2 ) );
-
-        //The callback is responsible for populating working memory and
-        // fireing all rules
-        PetStoreUI ui = new PetStoreUI( stock,
-                new CheckoutCallback( kc ) );
-        ui.createAndShowGUI(exitOnClose);
+            //The callback is responsible for populating working memory and
+            // fireing all rules
+            PetStoreUI ui = new PetStoreUI(stock,
+                    new CheckoutCallback(kbase));
+            ui.createAndShowGUI();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -73,142 +84,142 @@ public class PetStoreExample {
 
         private static final long serialVersionUID = 510l;
 
-        private JTextArea        output;
+        private JTextArea output;
 
-        private TableModel       tableModel;
+        private TableModel tableModel;
 
         private CheckoutCallback callback;
 
         /**
          * Build UI using specified items and using the given callback to pass the
          * items and jframe reference to the drools application
-         *f
+         *
+
          * @param callback
          */
         public PetStoreUI(Vector<Product> items,
                           CheckoutCallback callback) {
-            super( new BorderLayout() );
+            super(new BorderLayout());
             this.callback = callback;
 
             //Create main vertical split panel
-            JSplitPane splitPane = new JSplitPane( JSplitPane.VERTICAL_SPLIT );
-            add( splitPane,
-                    BorderLayout.CENTER );
+            JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+            add(splitPane,
+                    BorderLayout.CENTER);
 
             //create top half of split panel and add to parent
             JPanel topHalf = new JPanel();
-            topHalf.setLayout( new BoxLayout( topHalf,
-                    BoxLayout.X_AXIS ) );
-            topHalf.setBorder( BorderFactory.createEmptyBorder( 5,
+            topHalf.setLayout(new BoxLayout(topHalf,
+                    BoxLayout.X_AXIS));
+            topHalf.setBorder(BorderFactory.createEmptyBorder(5,
                     5,
                     0,
-                    5 ) );
-            topHalf.setMinimumSize( new Dimension( 400,
-                    50 ) );
-            topHalf.setPreferredSize( new Dimension( 450,
-                    250 ) );
-            splitPane.add( topHalf );
+                    5));
+            topHalf.setMinimumSize(new Dimension(400,
+                    50));
+            topHalf.setPreferredSize(new Dimension(450,
+                    250));
+            splitPane.add(topHalf);
 
             //create bottom top half of split panel and add to parent
-            JPanel bottomHalf = new JPanel( new BorderLayout() );
-            bottomHalf.setMinimumSize( new Dimension( 400,
-                    50 ) );
-            bottomHalf.setPreferredSize( new Dimension( 450,
-                    300 ) );
-            splitPane.add( bottomHalf );
+            JPanel bottomHalf = new JPanel(new BorderLayout());
+            bottomHalf.setMinimumSize(new Dimension(400,
+                    50));
+            bottomHalf.setPreferredSize(new Dimension(450,
+                    300));
+            splitPane.add(bottomHalf);
 
             //Container that list container that shows available store items
-            JPanel listContainer = new JPanel( new GridLayout( 1,
-                    1 ) );
-            listContainer.setBorder( BorderFactory.createTitledBorder( "List" ) );
-            topHalf.add( listContainer );
+            JPanel listContainer = new JPanel(new GridLayout(1,
+                    1));
+            listContainer.setBorder(BorderFactory.createTitledBorder("List"));
+            topHalf.add(listContainer);
 
             //Create JList for items, add to scroll pane and then add to parent
             // container
-            JList list = new JList( items );
+            JList list = new JList(items);
             ListSelectionModel listSelectionModel = list.getSelectionModel();
-            listSelectionModel.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
+            listSelectionModel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             //handler adds item to shopping cart
-            list.addMouseListener( new ListSelectionHandler() );
-            JScrollPane listPane = new JScrollPane( list );
-            listContainer.add( listPane );
+            list.addMouseListener(new ListSelectionHandler());
+            JScrollPane listPane = new JScrollPane(list);
+            listContainer.add(listPane);
 
-            JPanel tableContainer = new JPanel( new GridLayout( 1,
-                    1 ) );
-            tableContainer.setBorder( BorderFactory.createTitledBorder( "Table" ) );
-            topHalf.add( tableContainer );
+            JPanel tableContainer = new JPanel(new GridLayout(1,
+                    1));
+            tableContainer.setBorder(BorderFactory.createTitledBorder("Table"));
+            topHalf.add(tableContainer);
 
             //Container that displays table showing items in cart
             tableModel = new TableModel();
-            JTable table = new JTable( tableModel );
+            JTable table = new JTable(tableModel);
             //handler removes item to shopping cart
-            table.addMouseListener( new TableSelectionHandler() );
+            table.addMouseListener(new TableSelectionHandler());
             ListSelectionModel tableSelectionModel = table.getSelectionModel();
-            tableSelectionModel.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
+            tableSelectionModel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             TableColumnModel tableColumnModel = table.getColumnModel();
             //notice we have a custom renderer for each column as both columns
             // point to the same underlying object
-            tableColumnModel.getColumn( 0 ).setCellRenderer( new NameRenderer() );
-            tableColumnModel.getColumn( 1 ).setCellRenderer( new PriceRenderer() );
-            tableColumnModel.getColumn( 1 ).setMaxWidth( 50 );
+            tableColumnModel.getColumn(0).setCellRenderer(new NameRenderer());
+            tableColumnModel.getColumn(1).setCellRenderer(new PriceRenderer());
+            tableColumnModel.getColumn(1).setMaxWidth(50);
 
-            JScrollPane tablePane = new JScrollPane( table );
-            tablePane.setPreferredSize( new Dimension( 150,
-                    100 ) );
-            tableContainer.add( tablePane );
+            JScrollPane tablePane = new JScrollPane(table);
+            tablePane.setPreferredSize(new Dimension(150,
+                    100));
+            tableContainer.add(tablePane);
 
             //Create panel for checkout button and add to bottomHalf parent
             JPanel checkoutPane = new JPanel();
-            JButton button = new JButton( "Checkout" );
-            button.setVerticalTextPosition( AbstractButton.CENTER );
-            button.setHorizontalTextPosition( AbstractButton.LEADING );
+            JButton button = new JButton("Checkout");
+            button.setVerticalTextPosition(AbstractButton.CENTER);
+            button.setHorizontalTextPosition(AbstractButton.LEADING);
             //attach handler to assert items into working memory
-            button.addMouseListener( new CheckoutButtonHandler() );
-            button.setActionCommand( "checkout" );
-            checkoutPane.add( button );
-            bottomHalf.add( checkoutPane,
-                    BorderLayout.NORTH );
+            button.addMouseListener(new CheckoutButtonHandler());
+            button.setActionCommand("checkout");
+            checkoutPane.add(button);
+            bottomHalf.add(checkoutPane,
+                    BorderLayout.NORTH);
 
-            button = new JButton( "Reset" );
-            button.setVerticalTextPosition( AbstractButton.CENTER );
-            button.setHorizontalTextPosition( AbstractButton.TRAILING );
+            button = new JButton("Reset");
+            button.setVerticalTextPosition(AbstractButton.CENTER);
+            button.setHorizontalTextPosition(AbstractButton.TRAILING);
             //attach handler to assert items into working memory
-            button.addMouseListener( new ResetButtonHandler() );
-            button.setActionCommand( "reset" );
-            checkoutPane.add( button );
-            bottomHalf.add( checkoutPane,
-                    BorderLayout.NORTH );
+            button.addMouseListener(new ResetButtonHandler());
+            button.setActionCommand("reset");
+            checkoutPane.add(button);
+            bottomHalf.add(checkoutPane,
+                    BorderLayout.NORTH);
 
             //Create output area, imbed in scroll area an add to bottomHalf parent
             //Scope is at instance level so it can be easily referenced from other
             // methods
-            output = new JTextArea( 1,
-                    10 );
-            output.setEditable( false );
-            JScrollPane outputPane = new JScrollPane( output,
+            output = new JTextArea(1,
+                    10);
+            output.setEditable(false);
+            JScrollPane outputPane = new JScrollPane(output,
                     ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
-                    ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED );
-            bottomHalf.add( outputPane,
-                    BorderLayout.CENTER );
+                    ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            bottomHalf.add(outputPane,
+                    BorderLayout.CENTER);
 
-            this.callback.setOutput( this.output );
+            this.callback.setOutput(this.output);
         }
 
         /**
          * Create and show the GUI
          */
-        public void createAndShowGUI(boolean exitOnClose) {
+        public void createAndShowGUI() {
             //Create and set up the window.
-            JFrame frame = new JFrame( "Pet Store Demo" );
-            frame.setDefaultCloseOperation(exitOnClose ? JFrame.EXIT_ON_CLOSE : JFrame.DISPOSE_ON_CLOSE);
+            JFrame frame = new JFrame("Pet Store Demo");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-            setOpaque( true );
-            frame.setContentPane( this );
+            setOpaque(true);
+            frame.setContentPane(this);
 
             //Display the window.
             frame.pack();
-            frame.setLocationRelativeTo(null); // Center in screen
-            frame.setVisible( true );
+            frame.setVisible(true);
         }
 
         /**
@@ -217,7 +228,7 @@ public class PetStoreExample {
         private class ListSelectionHandler extends MouseAdapter {
             public void mouseReleased(MouseEvent e) {
                 JList jlist = (JList) e.getSource();
-                tableModel.addItem( (Product) jlist.getSelectedValue() );
+                tableModel.addItem((Product) jlist.getSelectedValue());
             }
         }
 
@@ -228,7 +239,7 @@ public class PetStoreExample {
             public void mouseReleased(MouseEvent e) {
                 JTable jtable = (JTable) e.getSource();
                 TableModel tableModel = (TableModel) jtable.getModel();
-                tableModel.removeItem( jtable.getSelectedRow() );
+                tableModel.removeItem(jtable.getSelectedRow());
             }
         }
 
@@ -238,8 +249,8 @@ public class PetStoreExample {
         private class CheckoutButtonHandler extends MouseAdapter {
             public void mouseReleased(MouseEvent e) {
                 JButton button = (JButton) e.getComponent();
-                callback.checkout( (JFrame) button.getTopLevelAncestor(),
-                        tableModel.getItems() );
+                callback.checkout((JFrame) button.getTopLevelAncestor(),
+                        tableModel.getItems());
             }
         }
 
@@ -248,9 +259,9 @@ public class PetStoreExample {
          */
         private class ResetButtonHandler extends MouseAdapter {
             public void mouseReleased(MouseEvent e) {
-                output.setText( null );
+                output.setText(null);
                 tableModel.clear();
-                System.out.println( "------ Reset ------" );
+                System.out.println("------ Reset ------");
             }
         }
 
@@ -267,7 +278,7 @@ public class PetStoreExample {
 
             public void setValue(Object object) {
                 Product item = (Product) object;
-                setText( item.getName() );
+                setText(item.getName());
             }
         }
 
@@ -284,7 +295,7 @@ public class PetStoreExample {
 
             public void setValue(Object object) {
                 Product item = (Product) object;
-                setText( Double.toString( item.getPrice() ) );
+                setText(Double.toString(item.getPrice()));
             }
         }
     }
@@ -299,7 +310,7 @@ public class PetStoreExample {
 
         private static final long serialVersionUID = 510l;
 
-        private String[]  columnNames = {"Name", "Price"};
+        private String[] columnNames = {"Name", "Price"};
 
         private ArrayList<Product> items;
 
@@ -322,7 +333,7 @@ public class PetStoreExample {
 
         public Object getValueAt(int row,
                                  int col) {
-            return items.get( row );
+            return items.get(row);
         }
 
         public Class<?> getColumnClass(int c) {
@@ -330,15 +341,15 @@ public class PetStoreExample {
         }
 
         public void addItem(Product item) {
-            items.add( item );
-            fireTableRowsInserted( items.size(),
-                    items.size() );
+            items.add(item);
+            fireTableRowsInserted(items.size(),
+                    items.size());
         }
 
         public void removeItem(int row) {
-            items.remove( row );
-            fireTableRowsDeleted( row,
-                    row );
+            items.remove(row);
+            fireTableRowsDeleted(row,
+                    row);
         }
 
         public List<Product> getItems() {
@@ -348,26 +359,25 @@ public class PetStoreExample {
         public void clear() {
             int lastRow = items.size();
             items.clear();
-            fireTableRowsDeleted( 0,
-                    lastRow );
+            fireTableRowsDeleted(0,
+                    lastRow);
         }
     }
 
     /**
-     *
      * This callback is called when the user pressed the checkout button. It is
      * responsible for adding the items to the shopping cart, asserting the shopping
      * cart and then firing all rules.
-     *
+     * <p>
      * A reference to the JFrame is also passed so the rules can launch dialog boxes
      * for user interaction. It uses the ApplicationData feature for this.
      */
     public static class CheckoutCallback {
-        KieContainer kcontainer;
-        JTextArea     output;
+        KnowledgeBase kbase;
+        JTextArea output;
 
-        public CheckoutCallback(KieContainer kcontainer) {
-            this.kcontainer = kcontainer;
+        public CheckoutCallback(KnowledgeBase kbase) {
+            this.kbase = kbase;
         }
 
         public void setOutput(JTextArea output) {
@@ -386,32 +396,29 @@ public class PetStoreExample {
             Order order = new Order();
 
             //Iterate through list and add to cart
-            for ( Product p: items ) {
-                order.addItem( new Purchase( order, p ) );
+            for (Product p : items) {
+                order.addItem(new Purchase(order, p));
             }
 
             //add the JFrame to the ApplicationData to allow for user interaction
 
-            // From the container, a session is created based on
-            // its definition and configuration in the META-INF/kmodule.xml file
-            KieSession ksession = kcontainer.newKieSession("ksession-rules");
+            StatefulKnowledgeSession ksession = kbase.newStatefulKnowledgeSession();
+            ksession.setGlobal("frame",
+                    frame);
+            ksession.setGlobal("textArea",
+                    this.output);
 
-            ksession.setGlobal( "frame",
-                    frame );
-            ksession.setGlobal( "textArea",
-                    this.output );
+            ksession.insert(new Product("Gold Fish",
+                    5));
+            ksession.insert(new Product("Fish Tank",
+                    25));
+            ksession.insert(new Product("Fish Food",
+                    2));
 
-            ksession.insert( new Product( "Gold Fish",
-                    5 ) );
-            ksession.insert( new Product( "Fish Tank",
-                    25 ) );
-            ksession.insert( new Product( "Fish Food",
-                    2 ) );
+            ksession.insert(new Product("Fish Food Sample",
+                    0));
 
-            ksession.insert( new Product( "Fish Food Sample",
-                    0 ) );
-
-            ksession.insert( order );
+            ksession.insert(order);
             ksession.fireAllRules();
 
             //returns the state of the cart
@@ -420,19 +427,19 @@ public class PetStoreExample {
     }
 
     public static class Order {
-        private List<Purchase>          items;
+        private List<Purchase> items;
 
-        public double        grossTotal      = -1;
-        public double        discountedTotal = -1;
+        public double grossTotal = -1;
+        public double discountedTotal = -1;
 
-        private static String newline         = System.getProperty( "line.separator" );
+        private static String newline = System.getProperty("line.separator");
 
         public Order() {
             this.items = new ArrayList<Purchase>();
         }
 
         public void addItem(Purchase item) {
-            this.items.add( item );
+            this.items.add(item);
         }
 
         public List<Purchase> getItems() {
@@ -458,12 +465,12 @@ public class PetStoreExample {
         public String toString() {
             StringBuffer buf = new StringBuffer();
 
-            buf.append( "ShoppingCart:" + newline );
+            buf.append("ShoppingCart:" + newline);
 
             Iterator<Purchase> itemIter = getItems().iterator();
 
-            while ( itemIter.hasNext() ) {
-                buf.append( "\t" + itemIter.next() + newline );
+            while (itemIter.hasNext()) {
+                buf.append("\t" + itemIter.next() + newline);
             }
 
             //            buf.append( "gross total=" + getGrossCost() + newline );
@@ -474,7 +481,7 @@ public class PetStoreExample {
     }
 
     public static class Purchase {
-        private Order   order;
+        private Order order;
         private Product product;
 
         public Purchase(Order order,
@@ -501,16 +508,16 @@ public class PetStoreExample {
         }
 
         public boolean equals(Object obj) {
-            if ( this == obj ) return true;
-            if ( obj == null ) return false;
-            if ( getClass() != obj.getClass() ) return false;
+            if (this == obj) return true;
+            if (obj == null) return false;
+            if (getClass() != obj.getClass()) return false;
             final Purchase other = (Purchase) obj;
-            if ( order == null ) {
-                if ( other.order != null ) return false;
-            } else if ( !order.equals( other.order ) ) return false;
-            if ( product == null ) {
-                if ( other.product != null ) return false;
-            } else if ( !product.equals( other.product ) ) return false;
+            if (order == null) {
+                if (other.order != null) return false;
+            } else if (!order.equals(other.order)) return false;
+            if (product == null) {
+                if (other.product != null) return false;
+            } else if (!product.equals(other.product)) return false;
             return true;
         }
 
@@ -544,20 +551,20 @@ public class PetStoreExample {
             int result = 1;
             result = PRIME * result + ((name == null) ? 0 : name.hashCode());
             long temp;
-            temp = Double.doubleToLongBits( price );
+            temp = Double.doubleToLongBits(price);
             result = PRIME * result + (int) (temp ^ (temp >>> 32));
             return result;
         }
 
         public boolean equals(Object obj) {
-            if ( this == obj ) return true;
-            if ( obj == null ) return false;
-            if ( getClass() != obj.getClass() ) return false;
+            if (this == obj) return true;
+            if (obj == null) return false;
+            if (getClass() != obj.getClass()) return false;
             final Product other = (Product) obj;
-            if ( name == null ) {
-                if ( other.name != null ) return false;
-            } else if ( !name.equals( other.name ) ) return false;
-            if ( Double.doubleToLongBits( price ) != Double.doubleToLongBits( other.price ) ) return false;
+            if (name == null) {
+                if (other.name != null) return false;
+            } else if (!name.equals(other.name)) return false;
+            if (Double.doubleToLongBits(price) != Double.doubleToLongBits(other.price)) return false;
             return true;
         }
 
