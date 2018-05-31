@@ -61,6 +61,7 @@ public class MainController implements Initializable {
     private JFXButton nextButton;
     private KieServices ks;
     private KieContainer kc;
+    private String userChoice;
 
 
     @Override
@@ -71,6 +72,8 @@ public class MainController implements Initializable {
     }
     @FXML
     public void next(MouseEvent event) {
+
+
         ks = KieServices.Factory.get();
         kc = ks.getKieClasspathContainer();
         KieSession ksession = kc.newKieSession("ksession-rules");
@@ -89,9 +92,30 @@ public class MainController implements Initializable {
         ksession.setGlobal( "question",question);
         ksession.setGlobal( "nextButton",nextButton);
         ksession.setGlobal( "togglegroup",choices);
+
+        JFXRadioButton rb = (JFXRadioButton)choices.getSelectedToggle();
+        userChoice = rb.getText();
+        Preferences preferences = new Preferences();
+        preferences.setOption(userChoice);
+        System.out.println(userChoice);
+        System.out.println(choice1.getText());
+
         ksession.fireAllRules();
 
 
+    }
+    public static class Preferences{
+        public Preferences(){}
+        public Preferences(String option){this.option=option;}
+        private String option;
+
+        public String getOption() {
+            return option;
+        }
+
+        public void setOption(String option) {
+            this.option = option;
+        }
     }
 }
 

@@ -5,6 +5,7 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXRadioButton;
 import javafx.scene.control.ToggleGroup
 import javafx.scene.control.RadioButton;
+import com.drools.MainController.Preferences;
 
 global javafx.scene.control.ToggleGroup togglegroup
 global com.jfoenix.controls.JFXRadioButton choice1
@@ -28,40 +29,29 @@ declare Client
     whyHaveNoSoul: String
 end
 
-
-rule "Initialization"
-when
-then
-    Client client = new Client();
-    RadioButton rb=(RadioButton)togglegroup.getSelectedToggle();
-    client.setCares_about(rb.getText());
-    insert(client);
-    System.out.println("I have created client who cares about " + rb.getText());
-end
-
 rule "Cars have no soul"
-when $p : Client( cares_about == "Cars have no soul");
+when $preferences: Preferences(option.equals(choice1.getText()))
 then
-System.out.println("Wykonalem sie bo wybrales opcje " + choice1.getText());
-question.setText("What does Soul mean to you?");
-choice1.setText("Easy: ability to drive off a pier into an estuary");
-choice2.setText("Synonym for weird");
-choice3.setText("Technically novel");
-choice4.setText("Soul mean the Car had an honest Job, like a Cop or Cobbie");
-choice5.setText("It means riding in it is like sitting on a Sofa");
-choice6.setOpacity(1);
-choice6.setText("It means the Car is often starring in Movies");
-choice7.setOpacity(1);
-choice7.setText("It could mean pure Evil?");
-choice8.setOpacity(1);
-choice8.setText("Soul is the spirits of 43 dead clowns haunting the Car");
-choice9.setOpacity(1);
-choice9.setText("Soul is the ability to go a million miles with Su Carbs and Lucas Electrics");
     Client client = new Client();
-    RadioButton rb=(RadioButton)togglegroup.getSelectedToggle();
-    client.setWhyHaveNoSoul(rb.getText());
+    client.setCares_about($preferences.getOption());
     insert(client);
- end
+    System.out.println("wykonuje sie");
+    question.setText("What does Soul mean to you?");
+    choice1.setText("Easy: ability to drive off a pier into an estuary");
+    choice2.setText("Synonym for weird");
+    choice3.setText("Technically novel");
+    choice4.setText("Soul mean the Car had an honest Job, like a Cop or Cobbie");
+    choice5.setText("It means riding in it is like sitting on a Sofa");
+    choice6.setOpacity(1);
+    choice6.setText("It means the Car is often starring in Movies");
+    choice7.setOpacity(1);
+    choice7.setText("It could mean pure Evil?");
+    choice8.setOpacity(1);
+    choice8.setText("Soul is the spirits of 43 dead clowns haunting the Car");
+    choice9.setOpacity(1);
+    choice9.setText("Soul is the ability to go a million miles with Su Carbs and Lucas Electrics");
+
+end
 
 
  rule "Easy ability"
