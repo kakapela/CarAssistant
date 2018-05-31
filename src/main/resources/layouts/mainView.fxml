@@ -21,7 +21,7 @@
       </Label>
       <AnchorPane layoutX="118.0" layoutY="219.0" prefHeight="435.0" prefWidth="799.0" style="-fx-background-color: white; -fx-background-radius: 20;">
          <children>
-            <JFXRadioButton fx:id="choice1" layoutX="-2.0" prefHeight="31.0" prefWidth="626.0" selected="true" text="Reliability and convenience bore me">
+            <JFXRadioButton fx:id="choice1" layoutX="-2.0" prefHeight="31.0" prefWidth="626.0" selected="true" text="Cars have no soul">
                <font>
                   <Font size="16.0" />
                </font>
@@ -29,7 +29,7 @@
                   <ToggleGroup fx:id="choices" />
                </toggleGroup>
             </JFXRadioButton>
-            <JFXRadioButton fx:id="choice3" layoutX="-2.0" layoutY="66.0" prefHeight="35.0" prefWidth="626.0" text="Reliability and convenience bore me" toggleGroup="$choices">
+            <JFXRadioButton fx:id="choice3" layoutX="-2.0" layoutY="66.0" prefHeight="35.0" prefWidth="626.0" text="Making statements" toggleGroup="$choices">
                <font>
                   <Font size="16.0" />
                </font>
@@ -79,7 +79,7 @@
                   <Font size="16.0" />
                </font>
             </JFXRadioButton>
-            <JFXRadioButton fx:id="choice2" layoutX="-2.0" layoutY="31.0" prefHeight="31.0" prefWidth="626.0" text="Reliability and convenience bore me" toggleGroup="$choices">
+            <JFXRadioButton fx:id="choice2" layoutX="-2.0" layoutY="31.0" prefHeight="31.0" prefWidth="626.0" text="Prefer style cars" toggleGroup="$choices">
                <font>
                   <Font size="16.0" />
                </font>

@@ -66,6 +66,11 @@ public class MainController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
+
+
+    }
+    @FXML
+    public void next(MouseEvent event) {
         ks = KieServices.Factory.get();
         kc = ks.getKieClasspathContainer();
         KieSession ksession = kc.newKieSession("ksession-rules");
@@ -83,10 +88,9 @@ public class MainController implements Initializable {
         ksession.setGlobal( "choice12",choice12);
         ksession.setGlobal( "question",question);
         ksession.setGlobal( "nextButton",nextButton);
+        ksession.setGlobal( "togglegroup",choices);
         ksession.fireAllRules();
-    }
-    @FXML
-    public void next(MouseEvent event) {
+
 
     }
 }

@@ -3,7 +3,10 @@ package com.drools;
 import javafx.scene.control.Label;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXRadioButton;
+import javafx.scene.control.ToggleGroup
+import javafx.scene.control.RadioButton;
 
+global javafx.scene.control.ToggleGroup togglegroup
 global com.jfoenix.controls.JFXRadioButton choice1
 global com.jfoenix.controls.JFXRadioButton choice2
 global com.jfoenix.controls.JFXRadioButton choice3
@@ -20,8 +23,24 @@ global com.jfoenix.controls.JFXButton nextButton
 global javafx.scene.control.Label question
 
 
-rule "Initialization"
-    when
-    then   insertLogical(new Option(choice1.getText()));
+declare Client
+    cares_about : String
 end
+
+rule "Initialization"
+when
+then
+    Client client = new Client();
+    RadioButton rb=(RadioButton)togglegroup.getSelectedToggle();
+    client.setCares_about(rb.getText());
+    insert(client);
+    System.out.println("I have created client who cares about " + rb.getText());
+end
+
+rule "Cars have no soul"
+when $p : Client( cares_about == choice1.getText() )
+then question.setText("Wybrales opcje"+choice1.getText());
+System.out.println("Wykonalem sie bo wybrales opcje " choice1.getText());
+ end
+
 
