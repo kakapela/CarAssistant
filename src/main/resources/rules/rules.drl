@@ -19,8 +19,9 @@ global com.jfoenix.controls.JFXRadioButton choice12
 global com.jfoenix.controls.JFXButton nextButton
 global javafx.scene.control.Label question
 
-rule "To sie uruchomi na poczatku aplikacji - testowa regula"
+
+rule "Initialization"
     when
-    then
-        choice5.setSelected(true);
+    then   insertLogical(new Option(choice1.getText()));
 end
+
