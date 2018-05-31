@@ -25,7 +25,9 @@ global javafx.scene.control.Label question
 
 declare Client
     cares_about : String
+    whyHaveNoSoul: String
 end
+
 
 rule "Initialization"
 when
@@ -38,9 +40,44 @@ then
 end
 
 rule "Cars have no soul"
-when $p : Client( cares_about == choice1.getText() )
-then question.setText("Wybrales opcje"+choice1.getText());
-System.out.println("Wykonalem sie bo wybrales opcje " choice1.getText());
+when $p : Client( cares_about == "Cars have no soul");
+then
+System.out.println("Wykonalem sie bo wybrales opcje " + choice1.getText());
+question.setText("What does Soul mean to you?");
+choice1.setText("Easy: ability to drive off a pier into an estuary");
+choice2.setText("Synonym for weird");
+choice3.setText("Technically novel");
+choice4.setText("Soul mean the Car had an honest Job, like a Cop or Cobbie");
+choice5.setText("It means riding in it is like sitting on a Sofa");
+choice6.setOpacity(1);
+choice6.setText("It means the Car is often starring in Movies");
+choice7.setOpacity(1);
+choice7.setText("It could mean pure Evil?");
+choice8.setOpacity(1);
+choice8.setText("Soul is the spirits of 43 dead clowns haunting the Car");
+choice9.setOpacity(1);
+choice9.setText("Soul is the ability to go a million miles with Su Carbs and Lucas Electrics");
+    Client client = new Client();
+    RadioButton rb=(RadioButton)togglegroup.getSelectedToggle();
+    client.setWhyHaveNoSoul(rb.getText());
+    insert(client);
  end
+
+
+ rule "Easy ability"
+ when $p : Client( whyHaveNoSoul == "Easy: ability to drive off a pier into an estuary");
+ then
+ System.out.println(" Easy ability ");
+ end
+
+ 
+  rule "Dupa"
+  when $p : Client( whyHaveNoSoul == "Synonym for weird");
+  then
+  System.out.println("DUPA");
+  end
+
+
+
 
 
