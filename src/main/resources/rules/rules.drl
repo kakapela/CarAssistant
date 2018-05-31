@@ -30,10 +30,10 @@ declare Client
 end
 
 rule "Cars have no soul"
-when $preferences: Preferences(option.equals(choice1.getText()))
+when preferences: Preferences(option=="Cars have no soul")
 then
     Client client = new Client();
-    client.setCares_about($preferences.getOption());
+    client.setCares_about(preferences.getOption());
     insert(client);
     System.out.println("wykonuje sie");
     question.setText("What does Soul mean to you?");
@@ -55,7 +55,8 @@ end
 
 
  rule "Easy ability"
- when $p : Client( whyHaveNoSoul == "Easy: ability to drive off a pier into an estuary");
+ when client : Client(cares_about=="Cars have no soul");
+
  then
  System.out.println(" Easy ability ");
  end
