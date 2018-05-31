@@ -12,6 +12,7 @@ import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
@@ -56,6 +57,7 @@ public class MainController implements Initializable {
 
     @FXML
     private Label question;
+    public Label wynik;
 
     @FXML
     private JFXButton nextButton;
@@ -72,11 +74,6 @@ public class MainController implements Initializable {
     }
     @FXML
     public void next(MouseEvent event) {
-
-        JFXRadioButton rb = (JFXRadioButton)choices.getSelectedToggle();
-        userChoice = rb.getText();
-        Preferences preferences = new Preferences();
-        preferences.setOption(userChoice);
 
         ks = KieServices.Factory.get();
         kc = ks.getKieClasspathContainer();
@@ -96,24 +93,11 @@ public class MainController implements Initializable {
         ksession.setGlobal( "question",question);
         ksession.setGlobal( "nextButton",nextButton);
         ksession.setGlobal( "togglegroup",choices);
-        ksession.insert(preferences);
+        ksession.setGlobal( "wynik",wynik);
 
         ksession.fireAllRules();
 
 
-    }
-    public static class Preferences{
-        public Preferences(){}
-        public Preferences(String option){this.option=option;}
-        private String option;
-
-        public String getOption() {
-            return option;
-        }
-
-        public void setOption(String option) {
-            this.option = option;
-        }
     }
 }
 
