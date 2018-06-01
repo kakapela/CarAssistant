@@ -37,7 +37,7 @@ String[] myOptions = new String[] {"New cars have no soul","Elem2","Elem3","Elem
 List choices = Arrays.asList(myOptions);
 String nextQuestion = "Why do you want a classic?";
 //ustawiamy kolejny dialog na podstawie wybranych opcji oraz pytania
-ChoiceDialog<String> dialog = createDialogAndGetUserChoice(choices,nextQuestion);
+ChoiceDialog<String> dialog = createDialog(choices,nextQuestion);
 Preferences preferences = new Preferences();
 preferences.setOption(getUserChoice(dialog));
 insert(preferences);
@@ -59,7 +59,7 @@ then
 String[] myOptions = new String[] {"gowno","Synonym for weird","Ehgh","Elem4","Elem5"};
 List choices = Arrays.asList(myOptions);
 String nextQuestion="What does soul mean to you?";
-ChoiceDialog dialog = createDialogAndGetUserChoice(choices,nextQuestion);
+ChoiceDialog dialog = createDialog(choices,nextQuestion);
 p.setOption(getUserChoice(dialog));
 update(p);
 end
@@ -88,7 +88,7 @@ System.out.println("Mamy dla tego klienta 3 auta");
 //-------------------------------------------------------------------FUNCKJE-------------------------------------------------------------------------------------------------------
 
 //tworzy kolejny dialog na podstawie podanego pytania i listy dostepnych wyborow
-function ChoiceDialog createDialogAndGetUserChoice(List myChoices,String nextQuestion){
+function ChoiceDialog createDialog(List myChoices,String nextQuestion){
     ChoiceDialog<String> dialog = new ChoiceDialog<>(myChoices.get(0).toString(), myChoices);
     dialog.setTitle("Car Asisstant");
     dialog.setHeaderText(nextQuestion);
