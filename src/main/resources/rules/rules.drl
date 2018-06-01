@@ -48,7 +48,7 @@ insert(client);
 
 end
 //ODNOSI SIE DO PIERWSZEGO PYTANIA
-//na poczatku dialogu klient nie ma zadnych zadeklarowanych pol wiec sprawdzamy jego pierwszą preferencje
+//na poczatku dialogu w pierwszym pytaniu sprawdzamy tylko preferencje uzytkownika czyli jego wybor
 //w sekjci then ustawiamy nowy dialog oraz zapisujemy kolejna, ostatnią odpowiedz Klienta do obiektu typu Preferences -> UPDEJTUJEMY TEN OBIEKT W BAZIE
 //no-loop - dzieki temu unikamy zapetlenia sie reguły
 rule "New cars have no soul"
