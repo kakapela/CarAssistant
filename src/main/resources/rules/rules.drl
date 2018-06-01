@@ -13,6 +13,11 @@ import java.util.Optional
 import javafx.scene.control.Label
 import java.util.List
 import java.util.Arrays
+import com.jfoenix.controls.JFXDialog
+import javafx.scene.layout.StackPane
+import com.jfoenix.controls.JFXDialogLayout
+import java.awt.event.ActionEvent
+import javafx.scene.text.Text
 
 global javafx.scene.control.ToggleGroup togglegroup
 global com.jfoenix.controls.JFXRadioButton choice1
@@ -29,6 +34,7 @@ global com.jfoenix.controls.JFXRadioButton choice11
 global com.jfoenix.controls.JFXRadioButton choice12
 global com.jfoenix.controls.JFXButton nextButton
 global javafx.scene.control.Label question
+global javafx.scene.layout.StackPane stackPane
 
 
 declare Client
@@ -43,18 +49,20 @@ end
 rule "Initalization"
 when
 then
+
 String[] myOptions = new String[] {"New cars have no soul","Elem2","Elem3","Elem4","Elem5"};
 List mylist = Arrays.asList(myOptions);
 String nextQuestion = "Why do you want a classic?";
 
 
 Preferences preferences = new Preferences();
-preferences.setOption(getUserChoice(mylist,nextQuestion));
+preferences.setOption(createDialogAndGetUserChoice(mylist,nextQuestion));
 insert(preferences);
 
 Client client = new Client();
 client.setCares_about(preferences.getOption());
 insert(client);
+
 end
 
 
@@ -65,14 +73,16 @@ then
 String[] myOptions = new String[] {"gowno","Synonym for weird","Ehgh","Elem4","Elem5"};
 List mylist = Arrays.asList(myOptions);
 String nextQuestion="What does soul mean to you?";
+String userChoice = createDialogAndGetUserChoice(mylist,nextQuestion);
 
-p.setOption(getUserChoice(mylist,nextQuestion));
+p.setOption(userChoice);
 update(p);
  end
 
  rule "Synonym for weird"
  no-loop
  when p:Preferences(option=="Synonym for weird")
+
  c: Client(cares_about=="New cars have no soul")
  then
  System.out.println("wykonuje sie");
@@ -108,8 +118,7 @@ function String getChoice(){
     return wynik.get();
 
 }
-function String getUserChoice(List myChoices,String nextQuestion){
-
+function String createDialogAndGetUserChoice(List myChoices,String nextQuestion){
     ChoiceDialog<String> dialog = new ChoiceDialog<>(myChoices.get(0).toString(), myChoices);
     dialog.setTitle("Car Asisstant");
     dialog.setHeaderText(nextQuestion);
@@ -124,22 +133,3 @@ function String getUserChoice(List myChoices,String nextQuestion){
     return wynik.get();
 
 }
-
-function String getNextChoice(String myquestion){
-    List<String> choices = new ArrayList<>();
-    choices.add("Synonym for weird");
-    choices.add("kolejna opcja2");
-    choices.add("kolejna opcja3");
-
-    ChoiceDialog<String> dialog = new ChoiceDialog<>("b", choices);
-    dialog.setTitle("Car Asisstant");
-    dialog.setHeaderText(myquestion);
-    dialog.setContentText("Type an answer:");
-
-    Optional<String> wynik = dialog.showAndWait();
-    if (wynik.isPresent()){
-        System.out.println("Your choice: " + wynik.get());
-    }
-return wynik.get();
-}
-

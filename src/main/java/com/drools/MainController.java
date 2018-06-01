@@ -1,12 +1,15 @@
 package com.drools;
 
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXDialog;
+import com.jfoenix.controls.JFXDialogLayout;
 import com.jfoenix.controls.JFXRadioButton;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.StackPane;
 import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
@@ -59,6 +62,9 @@ public class MainController implements Initializable {
     private Label question;
     public Label wynik;
 
+
+    @FXML
+    private StackPane stackPane;
     @FXML
     private JFXButton nextButton;
     private KieServices ks;
@@ -72,8 +78,11 @@ public class MainController implements Initializable {
 
 
     }
+
+
     @FXML
     public void next(MouseEvent event) {
+
 
         ks = KieServices.Factory.get();
         kc = ks.getKieClasspathContainer();
@@ -94,6 +103,7 @@ public class MainController implements Initializable {
         ksession.setGlobal( "nextButton",nextButton);
         ksession.setGlobal( "togglegroup",choices);
         ksession.setGlobal( "wynik",wynik);
+        ksession.setGlobal( "stackPane",stackPane);
 
         ksession.fireAllRules();
 
