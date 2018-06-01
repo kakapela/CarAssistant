@@ -1,42 +1,16 @@
 package com.drools;
 
-import javafx.scene.control.Label;
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXRadioButton;
-import javafx.scene.control.ToggleGroup
-import javafx.scene.control.RadioButton;
-import java.util.ArrayList;
-
 import java.util.ArrayList
 import javafx.scene.control.ChoiceDialog
 import java.util.Optional
 import javafx.scene.control.Label
 import java.util.List
 import java.util.Arrays
-import com.jfoenix.controls.JFXDialog
-import javafx.scene.layout.StackPane
-import com.jfoenix.controls.JFXDialogLayout
-import java.awt.event.ActionEvent
-import javafx.scene.text.Text
+import com.jfoenix.controls.JFXButton
 
-global javafx.scene.control.ToggleGroup togglegroup
-global com.jfoenix.controls.JFXRadioButton choice1
-global com.jfoenix.controls.JFXRadioButton choice2
-global com.jfoenix.controls.JFXRadioButton choice3
-global com.jfoenix.controls.JFXRadioButton choice4
-global com.jfoenix.controls.JFXRadioButton choice5
-global com.jfoenix.controls.JFXRadioButton choice6
-global com.jfoenix.controls.JFXRadioButton choice7
-global com.jfoenix.controls.JFXRadioButton choice8
-global com.jfoenix.controls.JFXRadioButton choice9
-global com.jfoenix.controls.JFXRadioButton choice10
-global com.jfoenix.controls.JFXRadioButton choice11
-global com.jfoenix.controls.JFXRadioButton choice12
 global com.jfoenix.controls.JFXButton nextButton
-global javafx.scene.control.Label question
-global javafx.scene.layout.StackPane stackPane
 
-
+//======================================================================================DEKLARACJE KLAS=================================================================
 declare Client
     cares_about : String
     meaningOfSoul: String
@@ -46,17 +20,26 @@ declare Preferences
     option: String
 end
 
+declare Car
+    name: String
+    brand: String
+end
+
+
+//==================================================================================== RULES ==============================================================================
+
+//na poczatku uruchamiamy pierwszy dialog. ustalamy pytanie oraz propozycje wyboru. Tworzymy obiekt typu Preferences aby miec dostep do ostatniej decyzji uzytkownika. Wkladamy go do bazy wiedzy.
+//tworzymy rowniez nowego klienta z pierwsza preferencja
 rule "Initalization"
 when
 then
-
 String[] myOptions = new String[] {"New cars have no soul","Elem2","Elem3","Elem4","Elem5"};
-List mylist = Arrays.asList(myOptions);
+List choices = Arrays.asList(myOptions);
 String nextQuestion = "Why do you want a classic?";
-
-
+//ustawiamy kolejny dialog na podstawie wybranych opcji oraz pytania
+ChoiceDialog<String> dialog = createDialogAndGetUserChoice(choices,nextQuestion);
 Preferences preferences = new Preferences();
-preferences.setOption(createDialogAndGetUserChoice(mylist,nextQuestion));
+preferences.setOption(getUserChoice(dialog));
 insert(preferences);
 
 Client client = new Client();
@@ -64,72 +47,60 @@ client.setCares_about(preferences.getOption());
 insert(client);
 
 end
-
-
+//ODNOSI SIE DO PIERWSZEGO PYTANIA
+//na poczatku dialogu klient nie ma zadnych zadeklarowanych pol wiec sprawdzamy jego pierwszą preferencje
+//w sekjci then ustawiamy nowy dialog oraz zapisujemy kolejna, ostatnią odpowiedz Klienta do obiektu typu Preferences -> UPDEJTUJEMY TEN OBIEKT W BAZIE
+//no-loop - dzieki temu unikamy zapetlenia sie reguły
 rule "New cars have no soul"
 no-loop
-when p:Preferences(option=="New cars have no soul")
+when
+p:Preferences(option=="New cars have no soul")
 then
 String[] myOptions = new String[] {"gowno","Synonym for weird","Ehgh","Elem4","Elem5"};
-List mylist = Arrays.asList(myOptions);
+List choices = Arrays.asList(myOptions);
 String nextQuestion="What does soul mean to you?";
-String userChoice = createDialogAndGetUserChoice(mylist,nextQuestion);
-
-p.setOption(userChoice);
+ChoiceDialog dialog = createDialogAndGetUserChoice(choices,nextQuestion);
+p.setOption(getUserChoice(dialog));
 update(p);
- end
+end
 
+//kolejne zapytanie -> sprawdzamy zatem aktualnego klienta oraz jego ostatni wybor, poniewaz klient ma juz jakies cechy
+//po tym zapytaniu uzytkownik nie bedziemy miec juz wiecej nowych wyborow zatem updejtujemy tylko jego aktualne decyzje w bazie i tyle
  rule "Synonym for weird"
  no-loop
  when p:Preferences(option=="Synonym for weird")
-
  c: Client(cares_about=="New cars have no soul")
  then
- System.out.println("wykonuje sie");
 c.setMeaningOfSoul(p.getOption());
+System.out.println("wykonuje sie");
 update(c);
  end
 
+//kolejne zapytanie - > sytuacja w ktorej nie ma juz do wyboru zadnych nowych decyzji
+//sprawdzamy cechy naszego klienta i na jego podstawie wybieramy dla niego samochody
 rule "Client with weird soul"
 when c: Client(cares_about=="New cars have no soul") and Client(meaningOfSoul=="Synonym for weird")
 then //tutaj wyswietlimy nowe autka
 System.out.println("Mamy dla tego klienta 3 auta");
+//TODO - NOWE GUI DIALOG KTORE BEDZIE WYSWIETLAC WYNIKI
  end
 
+//-------------------------------------------------------------------FUNCKJE-------------------------------------------------------------------------------------------------------
 
-
-function String getChoice(){
-    List<String> choices = new ArrayList<>();
-    choices.add("Cars have no soul");
-    choices.add("b");
-    choices.add("c");
-
-    ChoiceDialog<String> dialog = new ChoiceDialog<>("b", choices);
-    dialog.setTitle("Car Asisstant");
-    dialog.setHeaderText("Why classic car?");
-    dialog.setContentText("Type an answer:");
-
-    Optional<String> wynik= dialog.showAndWait();
-    if (wynik.isPresent()){
-        System.out.println("Your choice: " + wynik.get());
-
-
-    }
-    return wynik.get();
-
-}
-function String createDialogAndGetUserChoice(List myChoices,String nextQuestion){
+//tworzy kolejny dialog na podstawie podanego pytania i listy dostepnych wyborow
+function ChoiceDialog createDialogAndGetUserChoice(List myChoices,String nextQuestion){
     ChoiceDialog<String> dialog = new ChoiceDialog<>(myChoices.get(0).toString(), myChoices);
     dialog.setTitle("Car Asisstant");
     dialog.setHeaderText(nextQuestion);
     dialog.setContentText("Type an answer:");
+    return dialog;
 
+}
+//pobiera kolejna preferencje uzytkownika
+function String getUserChoice(ChoiceDialog dialog){
     Optional<String> wynik= dialog.showAndWait();
-    if (wynik.isPresent()){
-        System.out.println("Your choice: " + wynik.get());
-
-
-    }
-    return wynik.get();
-
+        if (wynik.isPresent()){
+            System.out.println("Your choice: " + wynik.get());
+        }
+        return wynik.get();
 }
