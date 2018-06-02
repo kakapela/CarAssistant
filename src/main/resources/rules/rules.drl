@@ -161,13 +161,23 @@ then
 update(c);
 end
 
- //kolejne zapytanie - > sytuacja w ktorej nie ma juz do wyboru zadnych nowych decyzji
- //sprawdzamy cechy naszego klienta i na jego podstawie wybieramy dla niego samochody
+
 rule "Client It means the Car is often starring in Movies"
 when c: Client(cares_about=="New cars have no soul") and Client(meaningOfSoul=="It means the Car is often starring in Movies")
-then //tutaj wyswietlimy nowe autka
-     System.out.println("Mamy dla tego klienta auta bbb");
-     //TODO - NOWE GUI DIALOG KTORE BEDZIE WYSWIETLAC WYNIKI
+then
+         Car car = new Car();
+
+
+         car.setName("Delorean DMC-12");
+
+
+         List cars = new ArrayList();
+         cars.add(car);
+
+
+
+         createInformationDialog(cars);
+         insert(car);
 end
 
 
@@ -181,13 +191,23 @@ then
 update(c);
 end
 
- //kolejne zapytanie - > sytuacja w ktorej nie ma juz do wyboru zadnych nowych decyzji
- //sprawdzamy cechy naszego klienta i na jego podstawie wybieramy dla niego samochody
+
 rule "Client Soul is the spirits of 43 dead clowns haunting the Car"
 when c: Client(cares_about=="New cars have no soul") and Client(meaningOfSoul=="Soul is the spirits of 43 dead clowns haunting the Car")
-then //tutaj wyswietlimy nowe autka
-     System.out.println("Mamy dla tego klienta auta ");
-     //TODO - NOWE GUI DIALOG KTORE BEDZIE WYSWIETLAC WYNIKI
+then
+         Car car = new Car();
+
+
+         car.setName("Nash Metropolitian");
+
+
+         List cars = new ArrayList();
+         cars.add(car);
+
+
+
+         createInformationDialog(cars);
+         insert(car);
 end
 
 
@@ -197,17 +217,27 @@ when p:Preferences(option=="Soul is the ability to go a million miles with Su Ca
      c: Client(cares_about=="New cars have no soul")
 then
     c.setMeaningOfSoul(p.getOption());
-    System.out.println("wykonuje sie");
+
 update(c);
 end
 
- //kolejne zapytanie - > sytuacja w ktorej nie ma juz do wyboru zadnych nowych decyzji
- //sprawdzamy cechy naszego klienta i na jego podstawie wybieramy dla niego samochody
 rule "Client Soul is the ability to go a million miles with Su Carbs and Lucas Electrics"
 when c: Client(cares_about=="New cars have no soul") and Client(meaningOfSoul=="Soul is the ability to go a million miles with Su Carbs and Lucas Electrics")
-then //tutaj wyswietlimy nowe autka
-     System.out.println("Mamy dla tego klienta auta ");
-     //TODO - NOWE GUI DIALOG KTORE BEDZIE WYSWIETLAC WYNIKI
+then
+         Car car = new Car();
+
+
+         car.setName("Volvo P1800");
+
+
+         List cars = new ArrayList();
+         cars.add(car);
+
+
+
+         createInformationDialog(cars);
+         insert(car);
+
 end
 
 
@@ -222,13 +252,24 @@ then
 update(c);
 end
 
- //kolejne zapytanie - > sytuacja w ktorej nie ma juz do wyboru zadnych nowych decyzji
- //sprawdzamy cechy naszego klienta i na jego podstawie wybieramy dla niego samochody
+
 rule "Client It could mean pure Evil?"
 when c: Client(cares_about=="New cars have no soul") and Client(meaningOfSoul=="It could mean pure Evil?")
-then //tutaj wyswietlimy nowe autka
-     System.out.println("Mamy dla tego klienta auta ");
-     //TODO - NOWE GUI DIALOG KTORE BEDZIE WYSWIETLAC WYNIKI
+then
+         Car car = new Car();
+         Car car2 = new Car();
+
+         car.setName("Plymouth Fury");
+         car2.setName("Buick GNX");
+
+         List cars = new ArrayList();
+         cars.add(car);
+         cars.add(car2);
+
+
+         createInformationDialog(cars);
+         insert(car);
+         insert(car2);
 end
 
 //----------------------------------------------------------------------------
@@ -263,9 +304,21 @@ end
 
 rule "Client Instead of pistons, some metal Hamantaschen"
 when c: Client(cares_about=="New cars have no soul") and Client(meaningOfSoul=="Technically novel") and Client(whyTechnicallyNovel=="Instead of pistons, some metal Hamantaschen")
-then //tutaj wyswietlimy nowe autka
-     System.out.println("Mamy dla tego klienta auta ");
-     //TODO - NOWE GUI DIALOG KTORE BEDZIE WYSWIETLAC WYNIKI
+then
+         Car car = new Car();
+
+
+         car.setName("Mazda RX7");
+
+
+         List cars = new ArrayList();
+         cars.add(car);
+
+
+
+         createInformationDialog(cars);
+         insert(car);
+
 end
 
 
@@ -282,9 +335,21 @@ end
 
 rule "Client Engine in the wrong place (maybe cooled by wrong Stuff)"
 when c: Client(cares_about=="New cars have no soul") and Client(meaningOfSoul=="Technically novel") and Client(whyTechnicallyNovel=="Engine in the wrong place (maybe cooled by wrong Stuff)")
-then //tutaj wyswietlimy nowe autka
-     System.out.println("Mamy dla tego klienta auta d ");
-     //TODO - NOWE GUI DIALOG KTORE BEDZIE WYSWIETLAC WYNIKI
+then
+         Car car = new Car();
+         Car car2 = new Car();
+
+         car.setName("Porsche 912");
+         car2.setName("Renault Alpine");
+
+         List cars = new ArrayList();
+         cars.add(car);
+         cars.add(car2);
+
+
+         createInformationDialog(cars);
+         insert(car);
+         insert(car2);
 end
 
 rule "Can burn cooking oil"
@@ -300,9 +365,17 @@ end
 
 rule "Client Can burn cooking oil"
 when c: Client(cares_about=="New cars have no soul") and Client(meaningOfSoul=="Technically novel") and Client(whyTechnicallyNovel=="Can burn cooking oil")
-then //tutaj wyswietlimy nowe autka
-     System.out.println("Mamy dla tego klienta auta d ");
-     //TODO - NOWE GUI DIALOG KTORE BEDZIE WYSWIETLAC WYNIKI
+then
+         Car car = new Car();
+
+         car.setName("Mercedes-Benz 300TD");
+
+         List cars = new ArrayList();
+         cars.add(car);
+
+
+         createInformationDialog(cars);
+         insert(car);
 end
 
 
@@ -320,6 +393,17 @@ end
 rule "Client They thought they were building a plane"
 when c: Client(cares_about=="New cars have no soul") and Client(meaningOfSoul=="Technically novel") and Client(whyTechnicallyNovel=="They thought they were building a plane")
 then
+
+         Car car = new Car();
+
+         car.setName("Saab 96");
+
+         List cars = new ArrayList();
+         cars.add(car);
+
+
+         createInformationDialog(cars);
+         insert(car);
 
 end
 
