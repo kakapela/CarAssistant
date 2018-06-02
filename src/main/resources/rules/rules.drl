@@ -319,9 +319,8 @@ end
 
 rule "Client They thought they were building a plane"
 when c: Client(cares_about=="New cars have no soul") and Client(meaningOfSoul=="Technically novel") and Client(whyTechnicallyNovel=="They thought they were building a plane")
-then //tutaj wyswietlimy nowe autka
-     System.out.println("Mamy dla tego klienta auta ");
-     //TODO - NOWE GUI DIALOG KTORE BEDZIE WYSWIETLAC WYNIKI
+then
+
 end
 
 
@@ -426,15 +425,21 @@ then
 update(c);
 end
 
-//kolejne zapytanie - > sytuacja w ktorej nie ma juz do wyboru zadnych nowych decyzji
-//sprawdzamy cechy naszego klienta i na jego podstawie wybieramy dla niego samochody
 rule "Client who loves chrome"
 when c: Client(kindOfStyle=="I love chrome and loud shirts") and Client(cares_about=="I prefer the style")
-then //tutaj wyswietlimy nowe autka
-     System.out.println("Mamy dla tego klienta '57 Chevy Bel Air");
-    //TODO - NOWE GUI DIALOG KTORE BEDZIE WYSWIETLAC WYNIKI
-end
 
+then
+         Car car = new Car();
+
+         car.setName("'57 Chevy Bel Air");
+
+         List cars = new ArrayList();
+         cars.add(car);
+
+
+         createInformationDialog(cars);
+         insert(car);
+end
 
 rule "Really slow cars that look fast"
 no-loop
@@ -446,13 +451,28 @@ then
 update(c);
 end
 
-
 rule "Client really slow"
 when c: Client(kindOfStyle=="Really slow cars that look fast") and Client(cares_about=="I prefer the style")
-then //tutaj wyswietlimy nowe autka
-    System.out.println("Mamy dla tego klienta 3 auta(Opel GT)");
-    //TODO - NOWE GUI DIALOG KTORE BEDZIE WYSWIETLAC WYNIKI
+then
+         Car car = new Car();
+         Car car2=new Car();
+         Car car3 =new Car();
+
+         car.setName("Opel GT");
+         car2.setName("VW Karmann Ghia");
+         car3.setName("Renualt Floride");
+
+         List cars = new ArrayList();
+         cars.add(car);
+         cars.add(car2);
+         cars.add(car3);
+
+         createInformationDialog(cars);
+         insert(car);
+         insert(car2);
+         insert(car3);
 end
+
 
 
 
@@ -469,9 +489,22 @@ end
 
 rule "Client who loves brass"
 when c: Client(kindOfStyle=="I love brass and lanterns") and Client(cares_about=="I prefer the style")
-then //tutaj wyswietlimy nowe autka
-     System.out.println("Mamy dla tego klienta 2 auta(Opel GT)");
-   //TODO - NOWE GUI DIALOG KTORE BEDZIE WYSWIETLAC WYNIKI
+then
+         Car car = new Car();
+         Car car2=new Car();
+
+
+         car.setName("Anything Pre WWI");
+         car2.setName("Maybe a Packard?");
+
+         List cars = new ArrayList();
+         cars.add(car);
+         cars.add(car2);
+
+
+         createInformationDialog(cars);
+         insert(car);
+         insert(car2);
 end
 
 
@@ -490,9 +523,14 @@ end
 
 rule "Client who Working class hero, also beer"
 when c: Client(kindOfStyle=="Working class hero, also beer") and Client(cares_about=="I prefer the style")
-then //tutaj wyswietlimy nowe autka
-     System.out.println("Mamy dla tego klienta 3 auta3");
-     //TODO - NOWE GUI DIALOG KTORE BEDZIE WYSWIETLAC WYNIKI
+then          Car car = new Car();
+              car.setName("Ford Mustang");
+
+              List cars = new ArrayList();
+              cars.add(car);
+
+              createInformationDialog(cars);
+              insert(car);
 end
 
 
@@ -509,9 +547,15 @@ end
 
 rule "Client who Classic German with a touch of pedal confusion"
 when c: Client(kindOfStyle=="Classic German with a touch of pedal confusion") and Client(cares_about=="I prefer the style")
-then //tutaj wyswietlimy nowe autka
-     System.out.println("Mamy dla tego klienta 3 auta i 2");
-     //TODO - NOWE GUI DIALOG KTORE BEDZIE WYSWIETLAC WYNIKI
+then
+         Car car = new Car();
+
+         car.setName("Audi 100");
+         List cars = new ArrayList();
+         cars.add(car);
+
+         createInformationDialog(cars);
+         insert(car);
 end
 
 rule "I can only drive cars that are museum-worthy"
@@ -528,9 +572,25 @@ end
          //sprawdzamy cechy naszego klienta i na jego podstawie wybieramy dla niego samochody
 rule "Client who can only drive cars that are museum-worthy"
 when c: Client(kindOfStyle=="I can only drive cars that are museum-worthy") and Client(cares_about=="I prefer the style")
-then //tutaj wyswietlimy nowe autka
-      System.out.println("Mamy dla tego klienta 3 auta");
-      //TODO - NOWE GUI DIALOG KTORE BEDZIE WYSWIETLAC WYNIKI
+then
+
+         Car car = new Car();
+         Car car2=new Car();
+         Car car3 =new Car();
+
+         car.setName("Citroen DS");
+         car2.setName("Lamborghini Miura");
+         car3.setName("Cord 812");
+
+         List cars = new ArrayList();
+         cars.add(car);
+         cars.add(car2);
+         cars.add(car3);
+
+         createInformationDialog(cars);
+         insert(car);
+         insert(car2);
+         insert(car3);
 end
 
 //***************************************************************8****
