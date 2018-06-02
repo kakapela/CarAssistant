@@ -7,6 +7,7 @@ import javafx.scene.control.Label
 import java.util.List
 import java.util.Arrays
 import com.jfoenix.controls.JFXButton
+import javafx.scene.control.Alert
 
 global com.jfoenix.controls.JFXButton nextButton
 
@@ -24,11 +25,13 @@ end
 
 declare Car
     name: String
-    brand: String
 end
 
 
 //==================================================================================== RULES ==============================================================================
+
+//guzik uruchamia dialog, dialog czeka za kliknieciem w guzik OK z wybraną przez użytkownika decyzją i wtedy jest tworzony obiekt preferences
+//w inicjalizacji jest tylko pobieranie decyzji i zrobienie nowego klienta
 
 //na poczatku uruchamiamy pierwszy dialog. ustalamy pytanie oraz propozycje wyboru. Tworzymy obiekt typu Preferences aby miec dostep do ostatniej decyzji uzytkownika. Wkladamy go do bazy wiedzy.
 //tworzymy rowniez nowego klienta z pierwsza preferencja
@@ -111,7 +114,14 @@ rule "Client Easy: ability to drive off a pier into an Estuary"
 when c: Client(cares_about=="New cars have no soul") and Client(meaningOfSoul=="Easy: ability to drive off a pier into an Estuary")
 then //tutaj wyswietlimy nowe autka
      System.out.println("Mamy dla tego klienta auta s");
-     //TODO - NOWE GUI DIALOG KTORE BEDZIE WYSWIETLAC WYNIKI
+     Car car = new Car();
+     car.setName("Amphicar");
+     insert(car);
+     List cars = new ArrayList();
+     cars.add(car);
+
+
+     createInformationDialog(cars);
 end
 
 
@@ -490,4 +500,14 @@ function String getUserChoice(ChoiceDialog dialog){
             System.out.println("Your choice: " + wynik.get());
         }
         return wynik.get();
+}
+function void createInformationDialog(List cars) {
+Alert alert = new Alert(Alert.AlertType.INFORMATION);
+alert.setTitle("Information Dialog");
+alert.setHeaderText("We found these cars for you!");
+for (int i =0; i<cars.size(); i++){
+Car car = (Car)cars.get(i);
+alert.setContentText("Car: " + car.getName());
+}
+alert.showAndWait();
 }
