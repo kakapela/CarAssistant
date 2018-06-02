@@ -23,6 +23,9 @@ declare Client
     whySofa: String
     reallyFastCar: String
     noStyleForCar: String
+    whySpeed: String
+    whyDeath: String
+    whyLoveSpeed: String
 end
 
 declare Preferences
@@ -81,8 +84,6 @@ p.setOption(getUserChoice(dialog));
 update(p);
 end
 
-//kolejne zapytanie -> sprawdzamy zatem aktualnego klienta oraz jego ostatni wybor, poniewaz klient ma juz jakies cechy
-//po tym zapytaniu uzytkownik nie bedziemy miec juz wiecej nowych wyborow zatem updejtujemy tylko jego aktualne decyzje w bazie i tyle
 
 
 
@@ -1240,6 +1241,336 @@ then
          insert(car);
 end
 //**************************************************************************** FINISHED ' I GUESS ' PATH *******************************************************************************
+
+
+
+//*******************************************************************************************************
+//Love speed hate safety
+//************************************************************************************************************888
+
+
+rule "Love speed hate safety"
+no-loop
+when
+p:Preferences(option=="Love speed hate safety")
+then
+String[] myOptions = new String[] {"Fake is fine","I have a death wish","I love speed and money","Fast and cheap"};
+List choices = Arrays.asList(myOptions);
+String nextQuestion="Real speed or just feels spedy?";
+ChoiceDialog dialog = createDialog(choices,nextQuestion);
+p.setOption(getUserChoice(dialog));
+update(p);
+end
+
+
+
+rule "Fake is fine"
+no-loop
+when p:Preferences(option=="Fake is fine")
+     c: Client(cares_about=="Love speed hate safety")
+then
+     c.setWhySpeed(p.getOption());
+     System.out.println("wykonujeeeeeeeeeeeeee sie");
+update(c);
+end
+
+rule "Client Fake is fine"
+when c: Client(cares_about=="Love speed hate safety") and Client(whySpeed=="Fake is fine")
+then
+         Car car = new Car();
+         Car car2 = new Car();
+         Car car3 = new Car();
+         Car car4 = new Car();
+
+
+         car.setName("Datsun S10");
+         car2.setName("Mini Cooper");
+         car3.setName("Mk1 VW Golf GTI");
+         car4.setName("Honda CRX");
+
+         List cars = new ArrayList();
+         cars.add(car);
+         cars.add(car2);
+         cars.add(car3);
+         cars.add(car4);
+
+
+
+         createInformationDialog(cars);
+         insert(car);
+         insert(car2);
+         insert(car3);
+         insert(car4);
+end
+
+
+
+rule "Fast and cheap"
+no-loop
+when p:Preferences(option=="Fast and cheap")
+     c: Client(cares_about=="Love speed hate safety")
+then
+     c.setWhySpeed(p.getOption());
+     System.out.println("wykonujeddddddddddddsie");
+update(c);
+end
+
+rule "Client Fast and cheap"
+when c: Client(cares_about=="Love speed hate safety") and Client(whySpeed=="Fast and cheap")
+then
+         Car car = new Car();
+
+
+
+         car.setName("Dodge Omni GLH");
+
+
+         List cars = new ArrayList();
+         cars.add(car);
+
+
+
+
+         createInformationDialog(cars);
+         insert(car);
+
+end
+
+
+rule "I have a death wish"
+no-loop
+when p:Preferences(option=="I have a death wish")
+     c: Client(cares_about=="Love speed hate safety")
+then
+     c.setWhySpeed(p.getOption());
+     System.out.println("wishwish");
+         String[] myOptions = new String[] {"Crushed by V8 in tiny space","Electrocuted by wiper switch","Blaze of glory","Car, tree","Run out of talent, off cliff"};
+         List choices = Arrays.asList(myOptions);
+         String nextQuestion="How do you want to go?";
+         ChoiceDialog dialog = createDialog(choices,nextQuestion);
+         p.setOption(getUserChoice(dialog));
+
+     update(p);
+update(c);
+end
+
+rule "Crushed by V8 in tiny space"
+no-loop
+when p:Preferences(option=="Crushed by V8 in tiny space")
+     c: Client(cares_about=="Love speed hate safety") and Client(whySpeed=="I have a death wish")
+then
+     c.setWhyDeath(p.getOption());
+
+update(c);
+end
+
+rule "Client Crushed by V8 in tiny space"
+when c: Client(cares_about=="Love speed hate safety") and Client(whySpeed=="I have a death wish") and Client(whyDeath=="Crushed by V8 in tiny space")
+then
+         Car car = new Car();
+         car.setName("Sunbeam Tiger");
+         List cars = new ArrayList();
+         cars.add(car);
+         createInformationDialog(cars);
+         insert(car);
+
+end
+
+rule "Electrocuted by wiper switch"
+no-loop
+when p:Preferences(option=="Electrocuted by wiper switch")
+     c: Client(cares_about=="Love speed hate safety") and Client(whySpeed=="I have a death wish")
+then
+     c.setWhyDeath(p.getOption());
+
+update(c);
+end
+
+rule "Client Electrocuted by wiper switch"
+when c: Client(cares_about=="Love speed hate safety") and Client(whySpeed=="I have a death wish") and Client(whyDeath=="Electrocuted by wiper switch")
+then
+         Car car = new Car();
+         car.setName("Jaguar E-Type");
+         List cars = new ArrayList();
+         cars.add(car);
+         createInformationDialog(cars);
+         insert(car);
+
+end
+rule "Blaze of glory"
+no-loop
+when p:Preferences(option=="Blaze of glory")
+     c: Client(cares_about=="Love speed hate safety") and Client(whySpeed=="I have a death wish")
+then
+     c.setWhyDeath(p.getOption());
+
+update(c);
+end
+
+rule "Client Blaze of glory"
+when c: Client(cares_about=="Love speed hate safety") and Client(whySpeed=="I have a death wish") and Client(whyDeath=="Blaze of glory")
+then
+         Car car = new Car();
+         car.setName("Ferrari Testarossa");
+         List cars = new ArrayList();
+         cars.add(car);
+         createInformationDialog(cars);
+         insert(car);
+
+end
+
+rule "Run out of talent, off cliff"
+no-loop
+when p:Preferences(option=="Run out of talent, off cliff")
+     c: Client(cares_about=="Love speed hate safety") and Client(whySpeed=="I have a death wish")
+then
+     c.setWhyDeath(p.getOption());
+
+update(c);
+end
+
+rule "Client Run out of talent, off cliff"
+when c: Client(cares_about=="Love speed hate safety") and Client(whySpeed=="I have a death wish") and Client(whyDeath=="Run out of talent, off cliff")
+then
+         Car car = new Car();
+         car.setName("Porsche Spyder");
+         List cars = new ArrayList();
+         cars.add(car);
+         createInformationDialog(cars);
+         insert(car);
+
+end
+
+rule "Car, tree"
+no-loop
+when p:Preferences(option=="Car, tree")
+     c: Client(cares_about=="Love speed hate safety") and Client(whySpeed=="I have a death wish")
+then
+     c.setWhyDeath(p.getOption());
+
+update(c);
+end
+
+rule "Client Car, tree"
+when c: Client(cares_about=="Love speed hate safety") and Client(whySpeed=="I have a death wish") and Client(whyDeath=="Car, tree")
+then
+         Car car = new Car();
+         Car car2 = new Car();
+         car.setName("Camaro Iroc-Z");
+         car2.setName("Plymouth Road Runner");
+         List cars = new ArrayList();
+         cars.add(car);
+         cars.add(car2);
+         createInformationDialog(cars);
+         insert(car);
+         insert(car2);
+
+end
+
+
+rule "I love speed and money"
+no-loop
+when p:Preferences(option=="I love speed and money")
+     c: Client(cares_about=="Love speed hate safety")
+then
+     c.setWhySpeed(p.getOption());
+
+         String[] myOptions = new String[] {"Some kind of Duke and I rally","My goal is to drive my Childhood bedroom posters","I have a weird Fetish where I like people asking Is it a Replica?"};
+         List choices = Arrays.asList(myOptions);
+         String nextQuestion="Great, who are you?";
+         ChoiceDialog dialog = createDialog(choices,nextQuestion);
+         p.setOption(getUserChoice(dialog));
+
+     update(p);
+update(c);
+end
+
+rule "Some kind of Duke and I rally"
+no-loop
+when p:Preferences(option=="Some kind of Duke and I rally")
+     c: Client(cares_about=="Love speed hate safety") and Client(whySpeed=="I love speed and money")
+then
+     c.setWhyLoveSpeed(p.getOption());
+
+update(c);
+end
+
+rule "Client Some kind of Duke and I rally"
+when c: Client(cares_about=="Love speed hate safety") and Client(whySpeed=="I love speed and money") and Client(whyLoveSpeed=="Some kind of Duke and I rally")
+then
+         Car car = new Car();
+         car.setName("Lancia Stratos");
+         List cars = new ArrayList();
+         cars.add(car);
+         createInformationDialog(cars);
+         insert(car);
+
+end
+
+
+rule "My goal is to drive my Childhood bedroom posters"
+no-loop
+when p:Preferences(option=="My goal is to drive my Childhood bedroom posters")
+     c: Client(cares_about=="Love speed hate safety") and Client(whySpeed=="I love speed and money")
+then
+     c.setWhyLoveSpeed(p.getOption());
+
+update(c);
+end
+
+rule "Client My goal is to drive my Childhood bedroom posters"
+when c: Client(cares_about=="Love speed hate safety") and Client(whySpeed=="I love speed and money") and Client(whyLoveSpeed=="My goal is to drive my Childhood bedroom posters")
+then
+         Car car = new Car();
+         Car car2= new Car();
+         car.setName("Lamborghini Countach");
+         car2.setName("Ferrari 250 GTO");
+         List cars = new ArrayList();
+         cars.add(car);
+         cars.add(car2);
+         createInformationDialog(cars);
+         insert(car);
+         insert(car2);
+end
+
+
+rule "I have a weird Fetish where I like people asking Is it a Replica?"
+no-loop
+when p:Preferences(option=="I have a weird Fetish where I like people asking Is it a Replica?")
+     c: Client(cares_about=="Love speed hate safety") and Client(whySpeed=="I love speed and money")
+then
+     c.setWhyLoveSpeed(p.getOption());
+
+update(c);
+end
+
+rule "Client I have a weird Fetish where I like people asking Is it a Replica?"
+when c: Client(cares_about=="Love speed hate safety") and Client(whySpeed=="I love speed and money") and Client(whyLoveSpeed=="I have a weird Fetish where I like people asking Is it a Replica?")
+then
+         Car car = new Car();
+         Car car2= new Car();
+         car.setName("AC Cobra");
+         car2.setName("Porsche 356 Speedster");
+         List cars = new ArrayList();
+         cars.add(car);
+         cars.add(car2);
+         createInformationDialog(cars);
+         insert(car);
+         insert(car2);
+
+end
+
+
+
+
+
+
+
+
+
+
+
+
 
 //-------------------------------------------------------------------FUNCKJE-------------------------------------------------------------------------------------------------------
 
