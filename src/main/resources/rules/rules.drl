@@ -426,7 +426,9 @@ then
     Car car = new Car();
 
     car.setName("Lincoln Town Car");
-    ChoiceDialog dialog = createDialogAuto(choices,nextQuestion, car);
+     List cars = new ArrayList();
+             cars.add(car);
+    ChoiceDialog dialog = createDialogAuto(choices,nextQuestion, cars);
 //    ChoiceDialog dialog = createDialog(choices,nextQuestion);
     p.setOption(getUserChoice(dialog));
 
@@ -948,7 +950,7 @@ then
       car.setName("VW Type III");
      List cars = new ArrayList();
      cars.add(car);
-     ChoiceDialog dialog = createDialogAuto(choices,nextQuestion, car);
+     ChoiceDialog dialog = createDialogAuto(choices,nextQuestion, cars);
       p.setOption(getUserChoice(dialog));
 
 
@@ -971,7 +973,7 @@ then
       car.setName("Porsche 914");
      List cars = new ArrayList();
      cars.add(car);
-     ChoiceDialog dialog = createDialogAuto(choices,nextQuestion, car);
+     ChoiceDialog dialog = createDialogAuto(choices,nextQuestion, cars);
       p.setOption(getUserChoice(dialog));
 
 
@@ -1049,6 +1051,32 @@ then
 end
 //8
 
+rule "My wallet is on the chain"
+no-loop
+when
+p:Preferences(option=="My wallet is on the chain")
+     c: Client(cares_about=="I Guess I'm making some kind of statement about something?")
+then
+
+ String[] myOptions = new String[] {"YES"};
+    List choices = Arrays.asList(myOptions);
+    String nextQuestion="Not for style, I'm tired of losing it";
+     c.setStatement(p.getOption());
+      Car car = new Car();
+      Car car2 = new Car();
+      car.setName("Ford Falcon");
+      car2.setName("Plymouth Valiant");
+     List cars = new ArrayList();
+     cars.add(car);
+     cars.add(car2);
+     ChoiceDialog dialog = createDialogAuto(choices,nextQuestion, cars);
+      p.setOption(getUserChoice(dialog));
+    insert(car);
+    insert(car2);
+
+     update(p);
+     update(c);
+end
 
 
 //-------------------------------------------------------------------FUNCKJE-------------------------------------------------------------------------------------------------------
@@ -1082,10 +1110,15 @@ information+="Car: " + car.getName()+"\n";
 alert.setContentText(information);
 alert.showAndWait();
 }
-function ChoiceDialog createDialogAuto(List myChoices,String nextQuestion, Car auto){
+function ChoiceDialog createDialogAuto(List myChoices,String nextQuestion, List cars){
     ChoiceDialog<String> dialog = new ChoiceDialog<>(myChoices.get(0).toString(), myChoices);
     dialog.setTitle("Car Asisstant");
-    dialog.setHeaderText("Wybraliśmy dla Ciebie: "+ auto.getName());
+    String information="";
+    for (int i =0; i<cars.size(); i++){
+    Car car = (Car)cars.get(i);
+    information+="Car: " + car.getName()+"\n";
+    }
+    dialog.setHeaderText(information);
     dialog.setContentText(nextQuestion);
     return dialog;
 
