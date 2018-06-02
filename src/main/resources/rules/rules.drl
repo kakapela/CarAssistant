@@ -235,9 +235,7 @@ when p:Preferences(option=="Technically novel")
      c: Client(cares_about=="New cars have no soul")
 then
 
-     c.setMeaningOfSoul(p.getOption());
-     System.out.println(c);
-     System.out.println(p);
+    c.setMeaningOfSoul(p.getOption());
     String[] myOptions = new String[] {"Instead of pistons, some metal Hamantaschen","Can burn cooking oil","Engine in the wrong place (maybe cooled by wrong Stuff)","They thought they were building a plane"};
     List choices = Arrays.asList(myOptions);
     String nextQuestion="Like what?";
@@ -334,12 +332,15 @@ when p:Preferences(option=="It means riding in it is like sitting on a Sofa")
      c: Client(cares_about=="New cars have no soul")
 then
     c.setMeaningOfSoul(p.getOption());
-    System.out.println("wykonuje sie");
+    String[] myOptions = new String[] {""};
+    List choices = Arrays.asList(myOptions);
+    String nextQuestion="Like what?";
+    ChoiceDialog dialog = createDialog(choices,nextQuestion);
+    p.setOption(getUserChoice(dialog));
+
+update(p);
 update(c);
 end
-
-
-
 
 
 
@@ -503,12 +504,18 @@ when p:Preferences(option=="I want to know how cars work")
 then
 System.out.println("dziala");
        String[] myOptions = new String[] {"More archaic","Not that archaic","Sounds good"};
+       System.out.println("dziala2");
        List choices = Arrays.asList(myOptions);
+       System.out.println(choices);
        String nextQuestion="So, something really simple?";
-       createDialog(choices,nextQuestion);
+       System.out.println("dziala4");
+       ChoiceDialog dialog =  createDialog(choices,nextQuestion);
+       System.out.println("dziala5");
         c.setWhyWantsToKnowHowCarsWork(p.getOption());
-        update(c);
+        System.out.println("dziala");
+        p.setOption(getUserChoice(dialog));
 
+update(c);
 end
 
 rule "More archaic"
