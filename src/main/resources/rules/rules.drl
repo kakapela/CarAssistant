@@ -502,35 +502,63 @@ no-loop
 when p:Preferences(option=="I want to know how cars work")
      c: Client(cares_about=="Reliability and convenience bore me")
 then
-System.out.println("dziala");
        String[] myOptions = new String[] {"More archaic","Not that archaic","Sounds good"};
-       System.out.println("dziala2");
        List choices = Arrays.asList(myOptions);
        System.out.println(choices);
        String nextQuestion="So, something really simple?";
-       System.out.println("dziala4");
        ChoiceDialog dialog =  createDialog(choices,nextQuestion);
-       System.out.println("dziala5");
-        c.setWhyWantsToKnowHowCarsWork(p.getOption());
-        System.out.println("dziala");
         p.setOption(getUserChoice(dialog));
-
-update(c);
+        c.setWhyWantsToKnowHowCarsWork(p.getOption());
+        update(c);
+        update(p);
 end
 
 rule "More archaic"
-no-loop
 when
      c: Client(cares_about=="Reliability and convenience bore me") and Client(whyWantsToKnowHowCarsWork=="More archaic")
 then
          Car car = new Car();
          car.setName("Ford model T");
-         insert(car);
          List cars = new ArrayList();
          cars.add(car);
          createInformationDialog(cars);
+         insert(car);
 end
 
+rule "Not that archaic"
+when
+     c: Client(cares_about=="Reliability and convenience bore me") and Client(whyWantsToKnowHowCarsWork=="Not that archaic")
+then
+         Car car = new Car();
+         car.setName("Ford model A");
+         List cars = new ArrayList();
+         cars.add(car);
+         createInformationDialog(cars);
+         insert(car);
+end
+rule "Sounds good"
+when
+     c: Client(cares_about=="Reliability and convenience bore me") and Client(whyWantsToKnowHowCarsWork=="Sounds good")
+then
+         Car car = new Car();
+         Car car2=new Car();
+         Car car3 =new Car();
+         Car car4= new Car();
+         car.setName("Citroen 2CV");
+         car2.setName("VW Thing");
+         car3.setName("Willys Jeep");
+         car4.setName("Honda Civic");
+         List cars = new ArrayList();
+         cars.add(car);
+         cars.add(car2);
+         cars.add(car3);
+         cars.add(car4);
+         createInformationDialog(cars);
+         insert(car);
+         insert(car2);
+         insert(car3);
+         insert(car4);
+end
 
 
 
@@ -557,9 +585,11 @@ function void createInformationDialog(List cars) {
 Alert alert = new Alert(Alert.AlertType.INFORMATION);
 alert.setTitle("Information Dialog");
 alert.setHeaderText("We found these cars for you!");
+String information="";
 for (int i =0; i<cars.size(); i++){
 Car car = (Car)cars.get(i);
-alert.setContentText("Car: " + car.getName());
+information+="Car: " + car.getName()+"\n";
 }
+alert.setContentText(information);
 alert.showAndWait();
 }
