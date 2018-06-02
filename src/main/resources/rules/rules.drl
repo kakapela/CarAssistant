@@ -21,6 +21,7 @@ declare Client
     whyReliabilityBoreHim: String
     shouldItBeQuick: String
     whySofa: String
+    reallyFastCar: String
 end
 
 declare Preferences
@@ -794,21 +795,118 @@ when
 p:Preferences(option=="I will only drive vehicles with two distinct luggage areas")
      c: Client(cares_about=="I Guess I'm making some kind of statement about something?")
 then
+
+ String[] myOptions = new String[] {"YES"};
+    List choices = Arrays.asList(myOptions);
+    String nextQuestion="Something faster?";
      c.setStatement(p.getOption());
+      Car car = new Car();
+      car.setName("VW Type III");
+     List cars = new ArrayList();
+     cars.add(car);
+     ChoiceDialog dialog = createDialogAuto(choices,nextQuestion, car);
+      p.setOption(getUserChoice(dialog));
+
+
+     update(p);
      update(c);
 end
 
-rule "Client - I will only drive vehicles with two distinct luggage areas"
+rule "I will only drive vehicles with two distinct luggage areas - FASTER"
+no-loop
 when
-    c: Client(cares_about=="I Guess I'm making some kind of statement about something?") and Client(statement=="I will only drive vehicles with two distinct luggage areas")
+p:Preferences(option=="YES")
+     c: Client(cares_about=="I Guess I'm making some kind of statement about something?") and Client(statement=="I will only drive vehicles with two distinct luggage areas")
+then
+
+ String[] myOptions = new String[] {"YES"};
+    List choices = Arrays.asList(myOptions);
+    String nextQuestion="Even Faster?";
+     c.setReallyFastCar(p.getOption());
+      Car car = new Car();
+      car.setName("Porsche 914");
+     List cars = new ArrayList();
+     cars.add(car);
+     ChoiceDialog dialog = createDialogAuto(choices,nextQuestion, car);
+      p.setOption(getUserChoice(dialog));
+
+
+     update(p);
+     update(c);
+end
+
+rule "I will only drive vehicles with two distinct luggage areas - EVEN FASTER"
+when
+    c: Client(cares_about=="I Guess I'm making some kind of statement about something?") and Client(statement=="I will only drive vehicles with two distinct luggage areas") and Client(reallyFastCar=="YES")
 then
          Car car = new Car();
-         car.setName("VW Type III");
+         car.setName("De Tomaso Mangusta");
          List cars = new ArrayList();
          cars.add(car);
          createInformationDialog(cars);
          insert(car);
 end
+//6
+rule "I'm a Kook. An AMERICAN Kook."
+no-loop
+when
+p:Preferences(option=="I'm a Kook. An AMERICAN Kook.")
+     c: Client(cares_about=="I Guess I'm making some kind of statement about something?")
+then
+     c.setStatement(p.getOption());
+     update(c);
+end
+
+rule  "Client -I'm a Kook. An AMERICAN Kook."
+when
+    c: Client(cares_about=="I Guess I'm making some kind of statement about something?") and Client(statement=="I'm a Kook. An AMERICAN Kook.")
+then
+         Car car = new Car();
+         Car car2 = new Car();
+         Car car3= new Car();
+         car.setName("AMC Pacer");
+         car2.setName("AMC Gremlin");
+         car3.setName("AMC AMX");
+         List cars = new ArrayList();
+         cars.add(car);
+         cars.add(car2);
+         cars.add(car3);
+         createInformationDialog(cars);
+         insert(car);
+         insert(car2);
+         insert(car3);
+end
+///7
+
+rule "I take driving seriously and have the gloves to prove it"
+no-loop
+when
+p:Preferences(option=="I take driving seriously and have the gloves to prove it")
+     c: Client(cares_about=="I Guess I'm making some kind of statement about something?")
+then
+     c.setStatement(p.getOption());
+     update(c);
+end
+
+rule  "Client I take driving seriously and have the gloves to prove it"
+when
+    c: Client(cares_about=="I Guess I'm making some kind of statement about something?") and Client(statement=="I take driving seriously and have the gloves to prove it")
+then
+         Car car = new Car();
+         Car car2 = new Car();
+         car.setName("BMW E30");
+         car2.setName("Porsche 911");
+         List cars = new ArrayList();
+         cars.add(car);
+         cars.add(car2);
+         createInformationDialog(cars);
+         insert(car);
+         insert(car2);
+end
+//8
+"My wallet is on the chain"
+
+
 
 //-------------------------------------------------------------------FUNCKJE-------------------------------------------------------------------------------------------------------
 
