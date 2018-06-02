@@ -96,12 +96,29 @@ then
 update(c);
 end
 
- //kolejne zapytanie - > sytuacja w ktorej nie ma juz do wyboru zadnych nowych decyzji
- //sprawdzamy cechy naszego klienta i na jego podstawie wybieramy dla niego samochody
 rule "Client with weird soul"
 when c: Client(cares_about=="New cars have no soul") and Client(meaningOfSoul=="Synonym for weird")
-then //tutaj wyswietlimy nowe autka      System.out.println("Mamy dla tego klienta 3 auta");
-        //TODO - NOWE GUI DIALOG KTORE BEDZIE WYSWIETLAC WYNIKI
+then
+         Car car = new Car();
+         Car car2 = new Car();
+         Car car3 = new Car();
+
+
+         car.setName("BMW Isetta");
+         car2.setName("Subaru 360");
+         car3.setName("Messerschmidt Kabinroller");
+
+         List cars = new ArrayList();
+         cars.add(car);
+         cars.add(car2);
+         cars.add(car3);
+
+
+
+         createInformationDialog(cars);
+         insert(car);
+         insert(car2);
+         insert(car3);
 end
 
 rule "Easy: ability to drive off a pier into an Estuary"
@@ -146,9 +163,27 @@ end
  //sprawdzamy cechy naszego klienta i na jego podstawie wybieramy dla niego samochody
 rule "Client Soul means the Car had an honest job, like a Cop or Cobbie"
 when c: Client(cares_about=="New cars have no soul") and Client(meaningOfSoul=="Soul means the Car had an honest job, like a Cop or Cobbie")
-then //tutaj wyswietlimy nowe autka
-     System.out.println("Mamy dla tego klienta auta w");
-     //TODO - NOWE GUI DIALOG KTORE BEDZIE WYSWIETLAC WYNIKI
+then
+         Car car = new Car();
+         Car car2 = new Car();
+         Car car3 = new Car();
+
+
+         car.setName("Ford Crown VIC");
+         car2.setName("Dodge Monaco");
+         car3.setName("Chevy Caprice");
+
+         List cars = new ArrayList();
+         cars.add(car);
+         cars.add(car2);
+         cars.add(car3);
+
+
+
+         createInformationDialog(cars);
+         insert(car);
+         insert(car2);
+         insert(car3);
 end
 
 
