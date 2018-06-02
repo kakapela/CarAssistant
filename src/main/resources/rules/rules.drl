@@ -22,6 +22,7 @@ declare Client
     shouldItBeQuick: String
     whySofa: String
     reallyFastCar: String
+    noStyleForCar: String
 end
 
 declare Preferences
@@ -953,7 +954,7 @@ then
      ChoiceDialog dialog = createDialogAuto(choices,nextQuestion, cars);
       p.setOption(getUserChoice(dialog));
 
-
+insert(car);
      update(p);
      update(c);
 end
@@ -975,7 +976,7 @@ then
      cars.add(car);
      ChoiceDialog dialog = createDialogAuto(choices,nextQuestion, cars);
       p.setOption(getUserChoice(dialog));
-
+    insert(car);
 
      update(p);
      update(c);
@@ -1076,6 +1077,53 @@ then
 
      update(p);
      update(c);
+end
+
+rule "Not for style, I'm tired of losing it"
+no-loop
+when
+p:Preferences(option=="YES")
+     c: Client(cares_about=="I Guess I'm making some kind of statement about something?") and Client(statement=="My wallet is on the chain")
+then
+System.out.println("wykonalem sie");
+     c.setNoStyleForCar(p.getOption());
+     update(c);
+end
+
+rule "Client Not for style, I'm tired of losing it"
+when
+    c: Client(cares_about=="I Guess I'm making some kind of statement about something?") and Client(statement=="My wallet is on the chain")
+    and Client(noStyleForCar=="YES")
+then
+         Car car = new Car();
+         car.setName("Rambler American");
+         List cars = new ArrayList();
+         cars.add(car);
+         createInformationDialog(cars);
+         insert(car);
+end
+//9
+
+rule "I'm a refugee from an alternate future with zeppelins and shit"
+no-loop
+when
+p:Preferences(option=="I'm a refugee from an alternate future with zeppelins and shit")
+     c: Client(cares_about=="I Guess I'm making some kind of statement about something?")
+then
+     c.setStatement(p.getOption());
+     update(c);
+end
+
+rule "Client -I'm a refugee from an alternate future with zeppelins and shit"
+when
+    c: Client(cares_about=="I Guess I'm making some kind of statement about something?") and Client(statement=="I'm a refugee from an alternate future with zeppelins and shit")
+then
+         Car car = new Car();
+         car.setName("Tatra T87");
+         List cars = new ArrayList();
+         cars.add(car);
+         createInformationDialog(cars);
+         insert(car);
 end
 
 
