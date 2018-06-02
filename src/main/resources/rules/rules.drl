@@ -17,6 +17,7 @@ declare Client
     meaningOfSoul: String
     kindOfStyle: String
     whyTechnicallyNovel: String
+    whyWantsToKnowHowCarsWork: String
 end
 
 declare Preferences
@@ -478,6 +479,50 @@ then //tutaj wyswietlimy nowe autka
       //TODO - NOWE GUI DIALOG KTORE BEDZIE WYSWIETLAC WYNIKI
 end
 
+//***************************************************************8****
+//********************"RELIABILITY AND CONVENIENCE BORE ME************
+//********************************************************************
+rule "Reliability and convenience bore me"
+no-loop
+when
+    p:Preferences(option=="Reliability and convenience bore me")
+then
+    String[] myOptions = new String[] {"I want to know how cars work","I'm erotically drawn to tow trucks and freeway shoulders"};
+    List choices = Arrays.asList(myOptions);
+    String nextQuestion="Oh yeah? Why's that?";
+    ChoiceDialog dialog = createDialog(choices,nextQuestion);
+    p.setOption(getUserChoice(dialog));
+update(p);
+
+end
+
+rule "I want to know how cars work"
+no-loop
+when p:Preferences(option=="I want to know how cars work")
+     c: Client(cares_about=="Reliability and convenience bore me")
+then
+System.out.println("dziala");
+       String[] myOptions = new String[] {"More archaic","Not that archaic","Sounds good"};
+       List choices = Arrays.asList(myOptions);
+       String nextQuestion="So, something really simple?";
+       createDialog(choices,nextQuestion);
+        c.setWhyWantsToKnowHowCarsWork(p.getOption());
+        update(c);
+
+end
+
+rule "More archaic"
+no-loop
+when
+     c: Client(cares_about=="Reliability and convenience bore me") and Client(whyWantsToKnowHowCarsWork=="More archaic")
+then
+         Car car = new Car();
+         car.setName("Ford model T");
+         insert(car);
+         List cars = new ArrayList();
+         cars.add(car);
+         createInformationDialog(cars);
+end
 
 
 
