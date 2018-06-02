@@ -17,7 +17,8 @@ declare Client
     meaningOfSoul: String
     kindOfStyle: String
     whyTechnicallyNovel: String
-    whyWantsToKnowHowCarsWork: String
+    whyReliabilityBoreHim: String
+    shouldItBeQuick: String
 end
 
 declare Preferences
@@ -508,14 +509,14 @@ then
        String nextQuestion="So, something really simple?";
        ChoiceDialog dialog =  createDialog(choices,nextQuestion);
         p.setOption(getUserChoice(dialog));
-        c.setWhyWantsToKnowHowCarsWork(p.getOption());
+        c.setWhyReliabilityBoreHim(p.getOption());
         update(c);
         update(p);
 end
 
 rule "More archaic"
 when
-     c: Client(cares_about=="Reliability and convenience bore me") and Client(whyWantsToKnowHowCarsWork=="More archaic")
+     c: Client(cares_about=="Reliability and convenience bore me") and Client(whyReliabilityBoreHim=="More archaic")
 then
          Car car = new Car();
          car.setName("Ford model T");
@@ -527,7 +528,7 @@ end
 
 rule "Not that archaic"
 when
-     c: Client(cares_about=="Reliability and convenience bore me") and Client(whyWantsToKnowHowCarsWork=="Not that archaic")
+     c: Client(cares_about=="Reliability and convenience bore me") and Client(whyReliabilityBoreHim=="Not that archaic")
 then
          Car car = new Car();
          car.setName("Ford model A");
@@ -538,7 +539,7 @@ then
 end
 rule "Sounds good"
 when
-     c: Client(cares_about=="Reliability and convenience bore me") and Client(whyWantsToKnowHowCarsWork=="Sounds good")
+     c: Client(cares_about=="Reliability and convenience bore me") and Client(whyReliabilityBoreHim=="Sounds good")
 then
          Car car = new Car();
          Car car2=new Car();
@@ -559,6 +560,71 @@ then
          insert(car3);
          insert(car4);
 end
+
+rule "I'm erotically drawn to tow trucks and freeway shoulders"
+no-loop
+when p:Preferences(option=="I'm erotically drawn to tow trucks and freeway shoulders")
+     c: Client(cares_about=="Reliability and convenience bore me")
+then
+       String[] myOptions = new String[] {"Nope","Also really lovely"};
+       List choices = Arrays.asList(myOptions);
+       System.out.println(choices);
+       String nextQuestion="OK. Should it be pretty quick?";
+       ChoiceDialog dialog =  createDialog(choices,nextQuestion);
+               c.setWhyReliabilityBoreHim(p.getOption());
+        p.setOption(getUserChoice(dialog));
+        update(c);
+        update(p);
+
+end
+
+rule "Quick and also really lovely"
+no-loop
+when
+p:Preferences(option=="Also really lovely")
+     c: Client(cares_about=="Reliability and convenience bore me") and Client(whyReliabilityBoreHim=="I'm erotically drawn to tow trucks and freeway shoulders")
+then
+     c.setShouldItBeQuick(p.getOption());
+     update(c);
+end
+
+rule "Not qucik car, but reliability bore our client"
+no-loop
+when
+p:Preferences(option=="Nope")
+     c: Client(cares_about=="Reliability and convenience bore me") and Client(whyReliabilityBoreHim=="I'm erotically drawn to tow trucks and freeway shoulders")
+then
+     c.setShouldItBeQuick(p.getOption());
+     update(c);
+end
+
+rule "Client who wants quick and really lovely car"
+when
+     c: Client(cares_about=="Reliability and convenience bore me") and Client(whyReliabilityBoreHim=="I'm erotically drawn to tow trucks and freeway shoulders")
+     and Client(shouldItBeQuick=="Also really lovely")
+then
+         Car car = new Car();
+         car.setName("Alfa Romeo Giulia Super");
+         List cars = new ArrayList();
+         cars.add(car);
+         createInformationDialog(cars);
+         insert(car);
+end
+
+rule "Client who doesnt want quick and really lovely car"
+when
+     c: Client(cares_about=="Reliability and convenience bore me") and Client(whyReliabilityBoreHim=="I'm erotically drawn to tow trucks and freeway shoulders")
+     and Client(shouldItBeQuick=="Nope")
+then
+         Car car = new Car();
+         car.setName("Lotus Elan");
+         List cars = new ArrayList();
+         cars.add(car);
+         createInformationDialog(cars);
+         insert(car);
+end
+
+
 
 
 
