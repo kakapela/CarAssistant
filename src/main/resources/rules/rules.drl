@@ -8,7 +8,6 @@ import java.util.List
 import java.util.Arrays
 import com.jfoenix.controls.JFXButton
 import javafx.scene.control.Alert
-import javafx.scene.control.ButtonType
 
 global com.jfoenix.controls.JFXButton nextButton
 
@@ -19,11 +18,9 @@ declare Client
     kindOfStyle: String
     statement:String
     whyTechnicallyNovel: String
-    whyWantsToKnowHowCarsWork: String
-
-
+    whyReliabilityBoreHim: String
     shouldItBeQuick: String
-
+    whySofa: String
 end
 
 declare Preferences
@@ -330,27 +327,77 @@ end
 
 
 
-
-
 rule "It means riding in it is like sitting on a Sofa"
 no-loop
 when p:Preferences(option=="It means riding in it is like sitting on a Sofa")
      c: Client(cares_about=="New cars have no soul")
 then
+
+
+
     c.setMeaningOfSoul(p.getOption());
-    String[] myOptions = new String[] {""};
+    String[] myOptions = new String[] {"Yes"};
     List choices = Arrays.asList(myOptions);
-    String nextQuestion="Like what?";
-    ChoiceDialog dialog = createDialog(choices,nextQuestion);
+    String nextQuestion="A huge, fast FWD Sofa?";
+    Car car = new Car();
+
+    car.setName("Lincoln Town Car");
+    ChoiceDialog dialog = createDialogAuto(choices,nextQuestion, car);
+//    ChoiceDialog dialog = createDialog(choices,nextQuestion);
     p.setOption(getUserChoice(dialog));
+
 
 update(p);
 update(c);
 end
 
 
+rule "A huge, fast FWD Sofa?"
+no-loop
+when p:Preferences(option=="Yes")
+     c:Client(cares_about=="New cars have no soul") and Client(meaningOfSoul=="It means riding in it is like sitting on a Sofa")
+then
+    c.setWhySofa(p.getOption());
+
+update(c);
+end
 
 
+rule "Client A huge, fast FWD Sofa?"
+when c: Client(cares_about=="New cars have no soul") and Client(meaningOfSoul=="It means riding in it is like sitting on a Sofa") and Client(whySofa=="Yes")
+then
+
+         Car car = new Car();
+
+         car.setName("Olds Tornado");
+
+         List cars = new ArrayList();
+         cars.add(car);
+
+
+         createInformationDialog(cars);
+         insert(car);
+
+end
+
+
+
+rule "No A huge, fast FWD Sofa?"
+no-loop
+when p:Preferences(option=="Not")
+     c:Client(cares_about=="New cars have no soul") and Client(meaningOfSoul=="It means riding in it is like sitting on a Sofa")
+then
+    c.setWhySofa(p.getOption());
+    System.out.println("wykonuje sie Not ");
+update(c);
+end
+
+
+rule "Client No A huge, fast FWD Sofa?"
+when c: Client(cares_about=="New cars have no soul") and Client(meaningOfSoul=="It means riding in it is like sitting on a Sofa") and Client(whySofa=="Not")
+then
+
+end
 
 
 //***************************
@@ -514,14 +561,14 @@ then
        String nextQuestion="So, something really simple?";
        ChoiceDialog dialog =  createDialog(choices,nextQuestion);
         p.setOption(getUserChoice(dialog));
-        c.setWhyWantsToKnowHowCarsWork(p.getOption());
+        c.setWhyReliabilityBoreHim(p.getOption());
         update(c);
         update(p);
 end
 
 rule "More archaic"
 when
-     c: Client(cares_about=="Reliability and convenience bore me") and Client(whyWantsToKnowHowCarsWork=="More archaic")
+     c: Client(cares_about=="Reliability and convenience bore me") and Client(whyReliabilityBoreHim=="More archaic")
 then
          Car car = new Car();
          car.setName("Ford model T");
@@ -533,7 +580,7 @@ end
 
 rule "Not that archaic"
 when
-     c: Client(cares_about=="Reliability and convenience bore me") and Client(whyWantsToKnowHowCarsWork=="Not that archaic")
+     c: Client(cares_about=="Reliability and convenience bore me") and Client(whyReliabilityBoreHim=="Not that archaic")
 then
          Car car = new Car();
          car.setName("Ford model A");
@@ -544,7 +591,7 @@ then
 end
 rule "Sounds good"
 when
-     c: Client(cares_about=="Reliability and convenience bore me") and Client(whyWantsToKnowHowCarsWork=="Sounds good")
+     c: Client(cares_about=="Reliability and convenience bore me") and Client(whyReliabilityBoreHim=="Sounds good")
 then
          Car car = new Car();
          Car car2=new Car();
@@ -576,7 +623,7 @@ then
        System.out.println(choices);
        String nextQuestion="OK. Should it be pretty quick?";
        ChoiceDialog dialog =  createDialog(choices,nextQuestion);
-               c.setWhyWantsToKnowHowCarsWork(p.getOption());
+               c.setWhyReliabilityBoreHim(p.getOption());
         p.setOption(getUserChoice(dialog));
         update(c);
         update(p);
@@ -587,7 +634,7 @@ rule "Quick and also really lovely"
 no-loop
 when
 p:Preferences(option=="Also really lovely")
-     c: Client(cares_about=="Reliability and convenience bore me") and Client(whyWantsToKnowHowCarsWork=="I'm erotically drawn to tow trucks and freeway shoulders")
+     c: Client(cares_about=="Reliability and convenience bore me") and Client(whyReliabilityBoreHim=="I'm erotically drawn to tow trucks and freeway shoulders")
 then
      c.setShouldItBeQuick(p.getOption());
      update(c);
@@ -597,7 +644,7 @@ rule "Not qucik car, but reliability bore our client"
 no-loop
 when
 p:Preferences(option=="Nope")
-     c: Client(cares_about=="Reliability and convenience bore me") and Client(whyWantsToKnowHowCarsWork=="I'm erotically drawn to tow trucks and freeway shoulders")
+     c: Client(cares_about=="Reliability and convenience bore me") and Client(whyReliabilityBoreHim=="I'm erotically drawn to tow trucks and freeway shoulders")
 then
      c.setShouldItBeQuick(p.getOption());
      update(c);
@@ -605,7 +652,7 @@ end
 
 rule "Client who wants quick and really lovely car"
 when
-     c: Client(cares_about=="Reliability and convenience bore me") and Client(whyWantsToKnowHowCarsWork=="I'm erotically drawn to tow trucks and freeway shoulders")
+     c: Client(cares_about=="Reliability and convenience bore me") and Client(whyReliabilityBoreHim=="I'm erotically drawn to tow trucks and freeway shoulders")
      and Client(shouldItBeQuick=="Also really lovely")
 then
          Car car = new Car();
@@ -618,7 +665,7 @@ end
 
 rule "Client who doesnt want quick and really lovely car"
 when
-     c: Client(cares_about=="Reliability and convenience bore me") and Client(whyWantsToKnowHowCarsWork=="I'm erotically drawn to tow trucks and freeway shoulders")
+     c: Client(cares_about=="Reliability and convenience bore me") and Client(whyReliabilityBoreHim=="I'm erotically drawn to tow trucks and freeway shoulders")
      and Client(shouldItBeQuick=="Nope")
 then
          Car car = new Car();
@@ -630,8 +677,138 @@ then
 end
 
 
+//******************************************
+//---------------- I GUESS BLA BLA -----------
+//*******************************************
 
 
+rule "I Guess I'm making some kind of statement about something?"
+no-loop
+when
+p:Preferences(option=="I Guess I'm making some kind of statement about something?")
+then
+String[] myOptions = new String[] {"I'm really rich but like to pretend I'm still a hippie",
+"The mothership left me in Paris", "I run an NYC-Themed diner in Las Vegas", "I live dangerously and nader can suck it",
+"I will only drive vehicles with two distinct luggage areas", "I'm a Kook. An AMERICAN Kook.",
+"I take driving seriously and have the gloves to prove it", "My wallet is on the chain", "I'm a refugee from an alternate future with zeppelins and shit",
+"I like being part of a massive automotive subculture", "I hate people knowing what i drive", "I kinda wanted a motorcycle but i have no balance"};
+List choices = Arrays.asList(myOptions);
+String nextQuestion="What does soul mean to you?";
+ChoiceDialog dialog = createDialog(choices,nextQuestion);
+p.setOption(getUserChoice(dialog));
+update(p);
+end
+//1
+rule "I'm really rich but like to pretend I'm still a hippie"
+no-loop
+when
+p:Preferences(option=="I'm really rich but like to pretend I'm still a hippie")
+     c: Client(cares_about=="I Guess I'm making some kind of statement about something?")
+then
+     c.setStatement(p.getOption());
+     update(c);
+end
+
+rule "Client - I'm really rich but like to pretend I'm still a hippie"
+when
+    c: Client(cares_about=="I Guess I'm making some kind of statement about something?") and Client(statement=="I'm really rich but like to pretend I'm still a hippie")
+then
+         Car car = new Car();
+         car.setName("VW Type 2 Microbus");
+         List cars = new ArrayList();
+         cars.add(car);
+         createInformationDialog(cars);
+         insert(car);
+end
+//2
+
+rule "The mothership left me in Paris"
+no-loop
+when
+p:Preferences(option=="The mothership left me in Paris")
+     c: Client(cares_about=="I Guess I'm making some kind of statement about something?")
+then
+     c.setStatement(p.getOption());
+     update(c);
+end
+
+rule "Client - The mothership left me in Paris"
+when
+    c: Client(cares_about=="I Guess I'm making some kind of statement about something?") and Client(statement=="The mothership left me in Paris")
+then
+         Car car = new Car();
+         car.setName("Citroen SM");
+         List cars = new ArrayList();
+         cars.add(car);
+         createInformationDialog(cars);
+         insert(car);
+end
+//3
+rule "I run an NYC-Themed diner in Las Vegas"
+no-loop
+when
+p:Preferences(option=="I run an NYC-Themed diner in Las Vegas")
+     c: Client(cares_about=="I Guess I'm making some kind of statement about something?")
+then
+     c.setStatement(p.getOption());
+     update(c);
+end
+
+rule "Client - I run an NYC-Themed diner in Las Vegas"
+when
+    c: Client(cares_about=="I Guess I'm making some kind of statement about something?") and Client(statement=="I run an NYC-Themed diner in Las Vegas")
+then
+         Car car = new Car();
+         car.setName("Checker Marathon");
+         List cars = new ArrayList();
+         cars.add(car);
+         createInformationDialog(cars);
+         insert(car);
+end
+//4
+rule "I live dangerously and nader can suck it"
+no-loop
+when
+p:Preferences(option=="I live dangerously and nader can suck it")
+     c: Client(cares_about=="I Guess I'm making some kind of statement about something?")
+then
+     c.setStatement(p.getOption());
+     update(c);
+end
+
+rule "Client - I live dangerously and nader can suck it"
+when
+    c: Client(cares_about=="I Guess I'm making some kind of statement about something?") and Client(statement=="I live dangerously and nader can suck it")
+then
+         Car car = new Car();
+         car.setName("Chevy Corvair");
+         List cars = new ArrayList();
+         cars.add(car);
+         createInformationDialog(cars);
+         insert(car);
+end
+//5
+rule "I will only drive vehicles with two distinct luggage areas"
+no-loop
+when
+p:Preferences(option=="I will only drive vehicles with two distinct luggage areas")
+     c: Client(cares_about=="I Guess I'm making some kind of statement about something?")
+then
+     c.setStatement(p.getOption());
+     update(c);
+end
+
+rule "Client - I will only drive vehicles with two distinct luggage areas"
+when
+    c: Client(cares_about=="I Guess I'm making some kind of statement about something?") and Client(statement=="I will only drive vehicles with two distinct luggage areas")
+then
+         Car car = new Car();
+         car.setName("VW Type III");
+         List cars = new ArrayList();
+         cars.add(car);
+         createInformationDialog(cars);
+         insert(car);
+end
 
 //-------------------------------------------------------------------FUNCKJE-------------------------------------------------------------------------------------------------------
 
@@ -663,4 +840,12 @@ information+="Car: " + car.getName()+"\n";
 }
 alert.setContentText(information);
 alert.showAndWait();
+}
+function ChoiceDialog createDialogAuto(List myChoices,String nextQuestion, Car auto){
+    ChoiceDialog<String> dialog = new ChoiceDialog<>(myChoices.get(0).toString(), myChoices);
+    dialog.setTitle("Car Asisstant");
+    dialog.setHeaderText("Wybraliśmy dla Ciebie: "+ auto.getName());
+    dialog.setContentText(nextQuestion);
+    return dialog;
+
 }
