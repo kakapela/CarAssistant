@@ -801,42 +801,39 @@ no-loop
 when p:Preferences(option=="I'm erotically drawn to tow trucks and freeway shoulders")
      c: Client(cares_about=="Reliability and convenience bore me")
 then
-       String[] myOptions = new String[] {"Nope","Also really lovely"};
-       List choices = Arrays.asList(myOptions);
-       System.out.println(choices);
-       String nextQuestion="OK. Should it be pretty quick?";
-       ChoiceDialog dialog =  createDialog(choices,nextQuestion);
-               c.setWhyReliabilityBoreHim(p.getOption());
-        p.setOption(getUserChoice(dialog));
-        update(c);
-        update(p);
+     String[] myOptions = new String[] {"YES"};
+        List choices = Arrays.asList(myOptions);
+        String nextQuestion="Also really lovely";
+         c.setWhyReliabilityBoreHim(p.getOption());
+          Car car = new Car();
+          car.setName("Lotus Elan");
+         List cars = new ArrayList();
+         cars.add(car);
+         ChoiceDialog dialog = createDialogAuto(choices,nextQuestion, cars);
+          p.setOption(getUserChoice(dialog));
+
+    insert(car);
+         update(p);
+         update(c);
 
 end
 
 rule "Quick and also really lovely"
 no-loop
 when
-p:Preferences(option=="Also really lovely")
+p:Preferences(option=="YES")
      c: Client(cares_about=="Reliability and convenience bore me") and Client(whyReliabilityBoreHim=="I'm erotically drawn to tow trucks and freeway shoulders")
 then
      c.setShouldItBeQuick(p.getOption());
      update(c);
 end
 
-rule "Not qucik car, but reliability bore our client"
-no-loop
-when
-p:Preferences(option=="Nope")
-     c: Client(cares_about=="Reliability and convenience bore me") and Client(whyReliabilityBoreHim=="I'm erotically drawn to tow trucks and freeway shoulders")
-then
-     c.setShouldItBeQuick(p.getOption());
-     update(c);
-end
+
 
 rule "Client who wants quick and really lovely car"
 when
      c: Client(cares_about=="Reliability and convenience bore me") and Client(whyReliabilityBoreHim=="I'm erotically drawn to tow trucks and freeway shoulders")
-     and Client(shouldItBeQuick=="Also really lovely")
+     and Client(shouldItBeQuick=="YES")
 then
          Car car = new Car();
          car.setName("Alfa Romeo Giulia Super");
@@ -846,18 +843,6 @@ then
          insert(car);
 end
 
-rule "Client who doesnt want quick and really lovely car"
-when
-     c: Client(cares_about=="Reliability and convenience bore me") and Client(whyReliabilityBoreHim=="I'm erotically drawn to tow trucks and freeway shoulders")
-     and Client(shouldItBeQuick=="Nope")
-then
-         Car car = new Car();
-         car.setName("Lotus Elan");
-         List cars = new ArrayList();
-         cars.add(car);
-         createInformationDialog(cars);
-         insert(car);
-end
 
 
 //******************************************
@@ -1160,7 +1145,101 @@ then
          createInformationDialog(cars);
          insert(car);
 end
+//10
 
+rule "I like being part of a massive automotive subculture"
+no-loop
+when
+p:Preferences(option=="I like being part of a massive automotive subculture")
+     c: Client(cares_about=="I Guess I'm making some kind of statement about something?")
+then
+     c.setStatement(p.getOption());
+     update(c);
+end
+
+rule "Client -I like being part of a massive automotive subculture"
+when
+    c: Client(cares_about=="I Guess I'm making some kind of statement about something?") and Client(statement=="I like being part of a massive automotive subculture")
+then
+         Car car = new Car();
+         Car car2 = new Car();
+         Car car3 = new Car();
+         Car car4 = new Car();
+         Car car5 = new Car();
+         car.setName("VW Beetle");
+         car2.setName("BMW 2002");
+         car3.setName("MGB");
+         car4.setName("Datsun 240Z");
+         car5.setName("Volvo 240");
+         List cars = new ArrayList();
+         cars.add(car);
+         cars.add(car2);
+         cars.add(car3);
+         cars.add(car4);
+         cars.add(car5);
+         createInformationDialog(cars);
+         insert(car);
+         insert(car2);
+         insert(car3);
+         insert(car4);
+         insert(car5);
+end
+//11
+
+
+rule "I hate people knowing what i drive"
+no-loop
+when
+p:Preferences(option=="I hate people knowing what i drive")
+     c: Client(cares_about=="I Guess I'm making some kind of statement about something?")
+then
+     c.setStatement(p.getOption());
+     update(c);
+end
+
+rule "Client -I hate people knowing what i drive"
+when
+    c: Client(cares_about=="I Guess I'm making some kind of statement about something?") and Client(statement=="I hate people knowing what i drive")
+then
+         Car car = new Car();
+         Car car2 = new Car();
+         Car car3 = new Car();
+         car.setName("Sterling 825");
+         car2.setName("Mitsubishi Starion");
+         car3.setName("Isuzu I-Mark");
+         List cars = new ArrayList();
+         cars.add(car);
+         cars.add(car2);
+         cars.add(car3);
+         createInformationDialog(cars);
+         insert(car);
+         insert(car2);
+         insert(car3);
+end
+//12
+
+rule "I kinda wanted a motorcycle but i have no balance"
+no-loop
+when
+p:Preferences(option=="I kinda wanted a motorcycle but i have no balance")
+     c: Client(cares_about=="I Guess I'm making some kind of statement about something?")
+then
+     c.setStatement(p.getOption());
+     update(c);
+end
+
+rule "Client - I kinda wanted a motorcycle but i have no balance"
+when
+    c: Client(cares_about=="I Guess I'm making some kind of statement about something?") and Client(statement=="I kinda wanted a motorcycle but i have no balance")
+then
+         Car car = new Car();
+         car.setName("Lotus 7");
+         List cars = new ArrayList();
+         cars.add(car);
+         createInformationDialog(cars);
+         insert(car);
+end
+//**************************************************************************** FINISHED ' I GUESS ' PATH *******************************************************************************
 
 //-------------------------------------------------------------------FUNCKJE-------------------------------------------------------------------------------------------------------
 
