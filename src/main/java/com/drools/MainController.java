@@ -19,7 +19,6 @@ public class MainController {
         ks = KieServices.Factory.get();
         kc = ks.getKieClasspathContainer();
         KieSession ksession = kc.newKieSession("ksession-rules");
-        ksession.setGlobal("nextButton", nextButton);
         ksession.fireAllRules();
     }
 }

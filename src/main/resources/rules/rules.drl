@@ -9,7 +9,6 @@ import java.util.Arrays
 import com.jfoenix.controls.JFXButton
 import javafx.scene.control.Alert
 
-global com.jfoenix.controls.JFXButton nextButton
 
 //======================================================================================DEKLARACJE KLAS=================================================================
 declare Client
@@ -28,8 +27,11 @@ declare Client
     whyLoveSpeed: String
 end
 
-declare Preferences
-    option: String
+
+
+declare Fact
+ answer: String
+  question: String
 end
 
 declare Car
@@ -42,23 +44,21 @@ end
 //guzik uruchamia dialog, dialog czeka za kliknieciem w guzik OK z wybraną przez użytkownika decyzją i wtedy jest tworzony obiekt preferences
 //w inicjalizacji jest tylko pobieranie decyzji i zrobienie nowego klienta
 
-//na poczatku uruchamiamy pierwszy dialog. ustalamy pytanie oraz propozycje wyboru. Tworzymy obiekt typu Preferences aby miec dostep do ostatniej decyzji uzytkownika. Wkladamy go do bazy wiedzy.
+//na poczatku uruchamiamy pierwszy dialog. ustalamy pytanie oraz propozycje wyboru. Tworzymy obiekt typu Fact aby miec dostep do ostatniej decyzji uzytkownika. Wkladamy go do bazy wiedzy.
 //tworzymy rowniez nowego klienta z pierwsza preferencja
 rule "Initalization"
 when
 then
-String[] myOptions = new String[] {"New cars have no soul","Reliability and convenience bore me","I Guess I'm making some kind of statement about something?","I prefer the style","Love speed hate safety"};
-List choices = Arrays.asList(myOptions);
+String[] myanswers = new String[] {"New cars have no soul","Reliability and convenience bore me","I Guess I'm making some kind of statement about something?","I prefer the style","Love speed hate safety"};
+List choices = Arrays.asList(myanswers);
 String nextQuestion = "Why do you want a classic?";
 //ustawiamy kolejny dialog na podstawie wybranych opcji oraz pytania
 ChoiceDialog<String> dialog = createDialog(choices,nextQuestion);
-Preferences preferences = new Preferences();
-preferences.setOption(getUserChoice(dialog));
-insert(preferences);
-Client client = new Client();
-client.setCares_about(preferences.getOption());
-insert(client);
+Fact fact1 = new Fact();
+fact1.setQuestion("Why do you want a classic?");
+fact1.setAnswer(getUserChoice(dialog));
 
+insert(fact1);
 end
 
 
@@ -69,36 +69,37 @@ end
 //***************************
 //ODNOSI SIE DO PIERWSZEGO PYTANIA
 //na poczatku dialogu w pierwszym pytaniu sprawdzamy tylko preferencje uzytkownika czyli jego wybor
-//w sekjci then ustawiamy nowy dialog oraz zapisujemy kolejna, ostatnią odpowiedz Klienta do obiektu typu Preferences -> UPDEJTUJEMY TEN OBIEKT W BAZIE
+//w sekjci then ustawiamy nowy dialog oraz zapisujemy kolejna, ostatnią odpowiedz Klienta do obiektu typu Fact -> UPDEJTUJEMY TEN OBIEKT W BAZIE
 //no-loop - dzieki temu unikamy zapetlenia sie reguły
+
+
+
 rule "New cars have no soul"
 no-loop
 when
-p:Preferences(option=="New cars have no soul")
+f:Fact(answer=="New cars have no soul") and Fact (question=="Why do you want a classic?")
 then
-String[] myOptions = new String[] {"Easy: ability to drive off a pier into an Estuary","Synonym for weird","Technically novel","Soul means the Car had an honest job, like a Cop or Cobbie","It means riding in it is like sitting on a Sofa","It means the Car is often starring in Movies","It could mean pure Evil?","Soul is the spirits of 43 dead clowns haunting the Car","Soul is the ability to go a million miles with Su Carbs and Lucas Electrics"};
-List choices = Arrays.asList(myOptions);
+String[] myanswers = new String[] {"Easy: ability to drive off a pier into an Estuary","Synonym for weird","Technically novel","Soul means the Car had an honest job, like a Cop or Cobbie","It means riding in it is like sitting on a Sofa","It means the Car is often starring in Movies","It could mean pure Evil?","Soul is the spirits of 43 dead clowns haunting the Car","Soul is the ability to go a million miles with Su Carbs and Lucas Electrics"};
+List choices = Arrays.asList(myanswers);
 String nextQuestion="What does soul mean to you?";
 ChoiceDialog dialog = createDialog(choices,nextQuestion);
-p.setOption(getUserChoice(dialog));
-update(p);
+System.out.println("FACT");
+Fact fact2 = new Fact();
+fact2.setQuestion(nextQuestion);
+fact2.setAnswer(getUserChoice(dialog));
+
+insert(fact2);
 end
+
 
 
 
 
 rule "Synonym for weird"
 no-loop
-when p:Preferences(option=="Synonym for weird")
-     c: Client(cares_about=="New cars have no soul")
-then
-     c.setMeaningOfSoul(p.getOption());
-     System.out.println("wykonuje sie");
-update(c);
-end
+when p:Fact( answer =="Synonym for weird") and Fact(question=="What does soul mean to you?")
+     f:Fact(answer=="New cars have no soul") and Fact (question=="Why do you want a classic?")
 
-rule "Client with weird soul"
-when c: Client(cares_about=="New cars have no soul") and Client(meaningOfSoul=="Synonym for weird")
 then
          Car car = new Car();
          Car car2 = new Car();
@@ -113,57 +114,38 @@ then
          cars.add(car);
          cars.add(car2);
          cars.add(car3);
-
-
-
          createInformationDialog(cars);
          insert(car);
          insert(car2);
          insert(car3);
+
 end
+
+
 
 rule "Easy: ability to drive off a pier into an Estuary"
 no-loop
-when p:Preferences(option=="Easy: ability to drive off a pier into an Estuary")
-     c: Client(cares_about=="New cars have no soul")
+when p:Fact( answer =="Easy: ability to drive off a pier into an Estuary") and Fact(question=="What does soul mean to you?")
+f:Fact(answer=="New cars have no soul") and Fact (question=="Why do you want a classic?")
 then
-     c.setMeaningOfSoul(p.getOption());
-     System.out.println("wykonuje sie");
-update(c);
-end
-
- //kolejne zapytanie - > sytuacja w ktorej nie ma juz do wyboru zadnych nowych decyzji
- //sprawdzamy cechy naszego klienta i na jego podstawie wybieramy dla niego samochody
-rule "Client Easy: ability to drive off a pier into an Estuary"
-when c: Client(cares_about=="New cars have no soul") and Client(meaningOfSoul=="Easy: ability to drive off a pier into an Estuary")
-then //tutaj wyswietlimy nowe autka
-     System.out.println("Mamy dla tego klienta auta s");
-     Car car = new Car();
-     car.setName("Amphicar");
-     insert(car);
-     List cars = new ArrayList();
-     cars.add(car);
+        Car car = new Car();
+        car.setName("Amphicar");
+        insert(car);
+        List cars = new ArrayList();
+        cars.add(car);
 
 
-     createInformationDialog(cars);
+        createInformationDialog(cars);
 end
 
 
 
-rule "Soul means the Car had an honest job, like a Cop or Cobbie novel"
-no-loop
-when p:Preferences(option=="Soul means the Car had an honest job, like a Cop or Cobbie")
-     c: Client(cares_about=="New cars have no soul")
-then
-    c.setMeaningOfSoul(p.getOption());
-    System.out.println("wykonuje sie");
-update(c);
-end
 
- //kolejne zapytanie - > sytuacja w ktorej nie ma juz do wyboru zadnych nowych decyzji
- //sprawdzamy cechy naszego klienta i na jego podstawie wybieramy dla niego samochody
-rule "Client Soul means the Car had an honest job, like a Cop or Cobbie"
-when c: Client(cares_about=="New cars have no soul") and Client(meaningOfSoul=="Soul means the Car had an honest job, like a Cop or Cobbie")
+
+
+rule "Soul means the Car had an honest job, like a Cop or Cobbie"
+when p:Fact( answer =="Soul means the Car had an honest job, like a Cop or Cobbie") and Fact(question=="What does soul mean to you?")
+f:Fact(answer=="New cars have no soul") and Fact (question=="Why do you want a classic?")
 then
          Car car = new Car();
          Car car2 = new Car();
@@ -189,19 +171,11 @@ end
 
 
 
+
+
 rule "It means the Car is often starring in Movies"
-no-loop
-when p:Preferences(option=="It means the Car is often starring in Movies")
-     c: Client(cares_about=="New cars have no soul")
-then
-    c.setMeaningOfSoul(p.getOption());
-    System.out.println("wykonuje sie");
-update(c);
-end
-
-
-rule "Client It means the Car is often starring in Movies"
-when c: Client(cares_about=="New cars have no soul") and Client(meaningOfSoul=="It means the Car is often starring in Movies")
+when p:Fact( answer =="It means the Car is often starring in Movies") and Fact(question=="What does soul mean to you?")
+     f:Fact(answer=="New cars have no soul") and Fact (question=="Why do you want a classic?")
 then
          Car car = new Car();
 
@@ -219,19 +193,11 @@ then
 end
 
 
+
+
 rule "Soul is the spirits of 43 dead clowns haunting the Car"
-no-loop
-when p:Preferences(option=="Soul is the spirits of 43 dead clowns haunting the Car")
-     c: Client(cares_about=="New cars have no soul")
-then
-    c.setMeaningOfSoul(p.getOption());
-    System.out.println("wykonuje sie");
-update(c);
-end
-
-
-rule "Client Soul is the spirits of 43 dead clowns haunting the Car"
-when c: Client(cares_about=="New cars have no soul") and Client(meaningOfSoul=="Soul is the spirits of 43 dead clowns haunting the Car")
+when p:Fact( answer =="Soul is the spirits of 43 dead clowns haunting the Car") and Fact(question=="What does soul mean to you?")
+     f:Fact(answer=="New cars have no soul") and Fact (question=="Why do you want a classic?")
 then
          Car car = new Car();
 
@@ -249,18 +215,11 @@ then
 end
 
 
-rule "Soul is the ability to go a million miles with Su Carbs and Lucas Electrics"
-no-loop
-when p:Preferences(option=="Soul is the ability to go a million miles with Su Carbs and Lucas Electrics")
-     c: Client(cares_about=="New cars have no soul")
-then
-    c.setMeaningOfSoul(p.getOption());
 
-update(c);
-end
 
 rule "Client Soul is the ability to go a million miles with Su Carbs and Lucas Electrics"
-when c: Client(cares_about=="New cars have no soul") and Client(meaningOfSoul=="Soul is the ability to go a million miles with Su Carbs and Lucas Electrics")
+when p:Fact( answer =="Client Soul is the ability to go a million miles with Su Carbs and Lucas Electrics") and Fact(question=="What does soul mean to you?")
+     f:Fact(answer=="New cars have no soul") and Fact (question=="Why do you want a classic?")
 then
          Car car = new Car();
 
@@ -280,19 +239,10 @@ end
 
 
 
+
 rule "It could mean pure Evil?"
-no-loop
-when p:Preferences(option=="It could mean pure Evil?")
-     c: Client(cares_about=="New cars have no soul")
-then
-    c.setMeaningOfSoul(p.getOption());
-    System.out.println("wykonuje sie");
-update(c);
-end
-
-
-rule "Client It could mean pure Evil?"
-when c: Client(cares_about=="New cars have no soul") and Client(meaningOfSoul=="It could mean pure Evil?")
+when p:Fact( answer =="It could mean pure Evil") and Fact(question=="What does soul mean to you?")
+     f:Fact(answer=="New cars have no soul") and Fact (question=="Why do you want a classic?")
 then
          Car car = new Car();
          Car car2 = new Car();
@@ -313,35 +263,31 @@ end
 //----------------------------------------------------------------------------
 rule "Technically novel"
 no-loop
-when p:Preferences(option=="Technically novel")
-     c: Client(cares_about=="New cars have no soul")
+when p:Fact( answer =="Technically novel") and Fact(question=="What does soul mean to you?")
+     f:Fact(answer=="New cars have no soul") and Fact (question=="Why do you want a classic?")
 then
 
-    c.setMeaningOfSoul(p.getOption());
-    String[] myOptions = new String[] {"Instead of pistons, some metal Hamantaschen","Can burn cooking oil","Engine in the wrong place (maybe cooled by wrong Stuff)","They thought they were building a plane"};
-    List choices = Arrays.asList(myOptions);
+
+    String[] myanswers = new String[] {"Instead of pistons, some metal Hamantaschen","Can burn cooking oil","Engine in the wrong place (maybe cooled by wrong Stuff)","They thought they were building a plane"};
+    List choices = Arrays.asList(myanswers);
     String nextQuestion="Like what?";
     ChoiceDialog dialog = createDialog(choices,nextQuestion);
-    p.setOption(getUserChoice(dialog));
 
-update(p);
-update(c);
+        Fact fact = new Fact();
+        fact.setAnswer(getUserChoice(dialog));
+        fact.setQuestion(nextQuestion);
+
+
+insert(fact);
 end
+
+
 
 
 rule "Instead of pistons, some metal Hamantaschen"
-no-loop
-when p:Preferences(option=="Instead of pistons, some metal Hamantaschen")
-     c:Client(cares_about=="New cars have no soul") and Client(meaningOfSoul=="Technically novel")
-then
-    c.setWhyTechnicallyNovel(p.getOption());
-    System.out.println("wykonuje sie ");
-update(c);
-end
-
-
-rule "Client Instead of pistons, some metal Hamantaschen"
-when c: Client(cares_about=="New cars have no soul") and Client(meaningOfSoul=="Technically novel") and Client(whyTechnicallyNovel=="Instead of pistons, some metal Hamantaschen")
+when p:Fact( answer =="Technically novel") and Fact(question=="What does soul mean to you?")
+     f:Fact(answer=="New cars have no soul") and Fact (question=="Why do you want a classic?")
+     d:Fact(answer=="Instead of pistons, some metal Hamantaschen") and Fact(question=="Like what?")
 then
          Car car = new Car();
 
@@ -360,19 +306,12 @@ then
 end
 
 
+
+
 rule "Engine in the wrong place (maybe cooled by wrong Stuff)"
-no-loop
-when p:Preferences(option=="Engine in the wrong place (maybe cooled by wrong Stuff)")
-     c:Client(cares_about=="New cars have no soul") and Client(meaningOfSoul=="Technically novel")
-then
-    c.setWhyTechnicallyNovel(p.getOption());
-    System.out.println("wykonuje sie ");
-update(c);
-end
-
-
-rule "Client Engine in the wrong place (maybe cooled by wrong Stuff)"
-when c: Client(cares_about=="New cars have no soul") and Client(meaningOfSoul=="Technically novel") and Client(whyTechnicallyNovel=="Engine in the wrong place (maybe cooled by wrong Stuff)")
+when p:Fact( answer =="Technically novel") and Fact(question=="What does soul mean to you?")
+     f:Fact(answer=="New cars have no soul") and Fact (question=="Why do you want a classic?")
+     d:Fact(answer=="Engine in the wrong place (maybe cooled by wrong Stuff)") and Fact(question=="Like what?")
 then
          Car car = new Car();
          Car car2 = new Car();
@@ -390,19 +329,11 @@ then
          insert(car2);
 end
 
-rule "Can burn cooking oil"
-no-loop
-when p:Preferences(option=="Can burn cooking oil")
-     c:Client(cares_about=="New cars have no soul") and Client(meaningOfSoul=="Technically novel")
-then
-    c.setWhyTechnicallyNovel(p.getOption());
-    System.out.println("wykonuje sie ");
-update(c);
-end
-
 
 rule "Client Can burn cooking oil"
-when c: Client(cares_about=="New cars have no soul") and Client(meaningOfSoul=="Technically novel") and Client(whyTechnicallyNovel=="Can burn cooking oil")
+when p:Fact( answer =="Technically novel") and Fact(question=="What does soul mean to you?")
+     f:Fact(answer=="New cars have no soul") and Fact (question=="Why do you want a classic?")
+     d:Fact(answer=="Client Can burn cooking oil") and Fact(question=="Like what?")
 then
          Car car = new Car();
 
@@ -418,18 +349,9 @@ end
 
 
 rule "They thought they were building a plane"
-no-loop
-when p:Preferences(option=="They thought they were building a plane")
-     c:Client(cares_about=="New cars have no soul") and Client(meaningOfSoul=="Technically novel")
-then
-    c.setWhyTechnicallyNovel(p.getOption());
-    System.out.println("wykonuje sie ");
-update(c);
-end
-
-
-rule "Client They thought they were building a plane"
-when c: Client(cares_about=="New cars have no soul") and Client(meaningOfSoul=="Technically novel") and Client(whyTechnicallyNovel=="They thought they were building a plane")
+when p:Fact( answer =="Technically novel") and Fact(question=="What does soul mean to you?")
+     f:Fact(answer=="New cars have no soul") and Fact (question=="Why do you want a classic?")
+     d:Fact(answer=="They thought they were building a plane") and Fact(question=="Like what?")
 then
 
          Car car = new Car();
@@ -450,15 +372,15 @@ end
 
 rule "It means riding in it is like sitting on a Sofa"
 no-loop
-when p:Preferences(option=="It means riding in it is like sitting on a Sofa")
+when p:Fact(answer=="It means riding in it is like sitting on a Sofa")
      c: Client(cares_about=="New cars have no soul")
 then
 
 
 
-    c.setMeaningOfSoul(p.getOption());
-    String[] myOptions = new String[] {"Yes"};
-    List choices = Arrays.asList(myOptions);
+    c.setMeaningOfSoul(p.getAnswer());
+    String[] myanswers = new String[] {"Yes"};
+    List choices = Arrays.asList(myanswers);
     String nextQuestion="A huge, fast FWD Sofa?";
     Car car = new Car();
 
@@ -467,7 +389,7 @@ then
              cars.add(car);
     ChoiceDialog dialog = createDialogAuto(choices,nextQuestion, cars);
 //    ChoiceDialog dialog = createDialog(choices,nextQuestion);
-    p.setOption(getUserChoice(dialog));
+    p.setAnswer(getUserChoice(dialog));
 
 
 update(p);
@@ -477,10 +399,10 @@ end
 
 rule "A huge, fast FWD Sofa?"
 no-loop
-when p:Preferences(option=="Yes")
+when p:Fact(answer=="Yes")
      c:Client(cares_about=="New cars have no soul") and Client(meaningOfSoul=="It means riding in it is like sitting on a Sofa")
 then
-    c.setWhySofa(p.getOption());
+    c.setWhySofa(p.getAnswer());
 
 update(c);
 end
@@ -507,10 +429,10 @@ end
 
 rule "No A huge, fast FWD Sofa?"
 no-loop
-when p:Preferences(option=="Not")
+when p:Fact(answer=="Not")
      c:Client(cares_about=="New cars have no soul") and Client(meaningOfSoul=="It means riding in it is like sitting on a Sofa")
 then
-    c.setWhySofa(p.getOption());
+    c.setWhySofa(p.getAnswer());
     System.out.println("wykonuje sie Not ");
 update(c);
 end
@@ -529,29 +451,24 @@ end
 rule "Prefer the style"
 no-loop
 when
-    p:Preferences(option=="I prefer the style")
+    p:Fact(answer=="I prefer the style") and Fact(question=="Why do you want a classic?")
 then
-    String[] myOptions = new String[] {"I love chrome and loud shirts","Really slow cars that look fast","I love brass and lanterns","I can only drive cars that are museum-worthy","Working class hero, also beer","Classic German with a touch of pedal confusion"};
-    List choices = Arrays.asList(myOptions);
+    String[] myanswers = new String[] {"I love chrome and loud shirts","Really slow cars that look fast","I love brass and lanterns","I can only drive cars that are museum-worthy","Working class hero, also beer","Classic German with a touch of pedal confusion"};
+    List choices = Arrays.asList(myanswers);
     String nextQuestion="Ok, what kind of style?";
     ChoiceDialog dialog = createDialog(choices,nextQuestion);
-    p.setOption(getUserChoice(dialog));
-update(p);
+    Fact fact = new Fact();
+    fact.setAnswer(getUserChoice(dialog));
+    fact.setQuestion(nextQuestion);
+insert(fact);
 end
 
-rule "Love chrome and loud shirts"
-no-loop
-when p:Preferences(option=="I love chrome and loud shirts")
-c: Client(cares_about=="I prefer the style")
-then
-    c.setKindOfStyle(p.getOption());
-    System.out.println("STYLE sie");
-update(c);
-end
 
-rule "Client who loves chrome"
-when c: Client(kindOfStyle=="I love chrome and loud shirts") and Client(cares_about=="I prefer the style")
 
+rule "I love chrome and loud shirts"
+when
+    p:Fact(answer=="I prefer the style") and Fact(question=="Why do you want a classic?")
+     s:Fact(answer=="I love chrome and loud shirts") and Fact(question=="Ok, what kind of style?")
 then
          Car car = new Car();
 
@@ -565,18 +482,12 @@ then
          insert(car);
 end
 
-rule "Really slow cars that look fast"
-no-loop
-when p:Preferences(option=="Really slow cars that look fast")
-     c: Client(cares_about=="I prefer the style")
-then
-    c.setKindOfStyle(p.getOption());
-    System.out.println("REally slow ");
-update(c);
-end
 
-rule "Client really slow"
-when c: Client(kindOfStyle=="Really slow cars that look fast") and Client(cares_about=="I prefer the style")
+
+rule "Really slow cars that look fast"
+when
+    p:Fact(answer=="I prefer the style") and Fact(question=="Why do you want a classic?")
+    b:Fact(answer=="Really slow cars that look fast") and Fact(question=="Ok, what kind of style?")
 then
          Car car = new Car();
          Car car2=new Car();
@@ -600,19 +511,13 @@ end
 
 
 
+
+
+
 rule "Love brass and lanterns"
-no-loop
-when p:Preferences(option=="I love brass and lanterns")
-     c: Client(cares_about=="I prefer the style")
-then
-      c.setKindOfStyle(p.getOption());
-      System.out.println("I love brass and lanterns ");
-update(c);
-end
-
-
-rule "Client who loves brass"
-when c: Client(kindOfStyle=="I love brass and lanterns") and Client(cares_about=="I prefer the style")
+when
+    p:Fact(answer=="I prefer the style") and Fact(question=="Why do you want a classic?")
+    b:Fact(answer=="I love brass and lanterns") and Fact(question=="Ok, what kind of style?")
 then
          Car car = new Car();
          Car car2=new Car();
@@ -634,19 +539,12 @@ end
 
 
 
+
+
+
 rule "Working class hero, also beer"
-no-loop
-when p:Preferences(option=="Working class hero, also beer")
-     c: Client(cares_about=="I prefer the style")
-then
-     c.setKindOfStyle(p.getOption());
-     System.out.println(p.getOption());
-update(c);
-end
-
-
-rule "Client who Working class hero, also beer"
-when c: Client(kindOfStyle=="Working class hero, also beer") and Client(cares_about=="I prefer the style")
+when    p:Fact(answer=="I prefer the style") and Fact(question=="Why do you want a classic?")
+         b:Fact(answer=="Working class hero, also beer") and Fact(question=="Ok, what kind of style?")
 then          Car car = new Car();
               car.setName("Ford Mustang");
 
@@ -658,19 +556,11 @@ then          Car car = new Car();
 end
 
 
+
+
 rule "Classic German with a touch of pedal confusion"
-no-loop
-when p:Preferences(option=="Classic German with a touch of pedal confusion")
-     c: Client(cares_about=="I prefer the style")
-then
-     c.setKindOfStyle(p.getOption());
-     System.out.println(p.getOption());
-update(c);
-end
-
-
-rule "Client who Classic German with a touch of pedal confusion"
-when c: Client(kindOfStyle=="Classic German with a touch of pedal confusion") and Client(cares_about=="I prefer the style")
+when    p:Fact(answer=="I prefer the style") and Fact(question=="Why do you want a classic?")
+         b:Fact(answer=="Classic German with a touch of pedal confusion") and Fact(question=="Ok, what kind of style?")
 then
          Car car = new Car();
 
@@ -682,20 +572,11 @@ then
          insert(car);
 end
 
-rule "I can only drive cars that are museum-worthy"
-no-loop
-when p:Preferences(option=="I can only drive cars that are museum-worthy")
-     c: Client(cares_about=="I prefer the style")
-then
-     c.setKindOfStyle(p.getOption());
-     System.out.println(p.getOption());
-update(c);
-end
 
-         //kolejne zapytanie - > sytuacja w ktorej nie ma juz do wyboru zadnych nowych decyzji
-         //sprawdzamy cechy naszego klienta i na jego podstawie wybieramy dla niego samochody
 rule "Client who can only drive cars that are museum-worthy"
-when c: Client(kindOfStyle=="I can only drive cars that are museum-worthy") and Client(cares_about=="I prefer the style")
+when
+     p:Fact(answer=="I prefer the style") and Fact(question=="Why do you want a classic?")
+         b:Fact(answer=="I can only drive cars that are museum-worthy") and Fact(question=="Ok, what kind of style?")
 then
 
          Car car = new Car();
@@ -723,39 +604,47 @@ end
 rule "Reliability and convenience bore me"
 no-loop
 when
-    p:Preferences(option=="Reliability and convenience bore me")
+    p:Fact(answer=="Reliability and convenience bore me") and Fact (question=="Why do you want a classic?")
 then
-    String[] myOptions = new String[] {"I want to know how cars work","I'm erotically drawn to tow trucks and freeway shoulders"};
-    List choices = Arrays.asList(myOptions);
+    String[] myanswers = new String[] {"I want to know how cars work","I'm erotically drawn to tow trucks and freeway shoulders"};
+    List choices = Arrays.asList(myanswers);
     String nextQuestion="Oh yeah? Why's that?";
     ChoiceDialog dialog = createDialog(choices,nextQuestion);
-    p.setOption(getUserChoice(dialog));
-update(p);
+    Fact fact = new Fact();
+    fact.setAnswer(getUserChoice(dialog));
+    fact.setQuestion(nextQuestion);
+    insert(fact);
+
+
 
 end
 
 rule "I want to know how cars work"
 no-loop
-when p:Preferences(option=="I want to know how cars work")
-     c: Client(cares_about=="Reliability and convenience bore me")
+when p:Fact(answer=="I want to know how cars work") and Fact(question=="Oh yeah? Why's that?")
+         f:Fact(answer=="Reliability and convenience bore me") and Fact (question=="Why do you want a classic?")
 then
-       String[] myOptions = new String[] {"More archaic","Not that archaic","Sounds good"};
-       List choices = Arrays.asList(myOptions);
+       String[] myanswers = new String[] {"More archaic","Not that archaic","Sounds good"};
+       List choices = Arrays.asList(myanswers);
        System.out.println(choices);
        String nextQuestion="So, something really simple?";
        ChoiceDialog dialog =  createDialog(choices,nextQuestion);
-        p.setOption(getUserChoice(dialog));
-        c.setWhyReliabilityBoreHim(p.getOption());
-        update(c);
-        update(p);
+       Fact fact = new Fact();
+        fact.setAnswer(getUserChoice(dialog));
+        fact.setQuestion(nextQuestion);
+        insert(fact);
+
 end
 
 rule "More archaic"
 when
-     c: Client(cares_about=="Reliability and convenience bore me") and Client(whyReliabilityBoreHim=="More archaic")
+     p:Fact(answer=="I want to know how cars work") and Fact(question=="Oh yeah? Why's that?")
+     f:Fact(answer=="Reliability and convenience bore me") and Fact (question=="Why do you want a classic?")
+      c:Fact(answer=="More archaic") and Fact (question=="So, something really simple?")
+
 then
          Car car = new Car();
-         car.setName("Ford model T");
+         car.setName("Ford Model T");
          List cars = new ArrayList();
          cars.add(car);
          createInformationDialog(cars);
@@ -764,10 +653,12 @@ end
 
 rule "Not that archaic"
 when
-     c: Client(cares_about=="Reliability and convenience bore me") and Client(whyReliabilityBoreHim=="Not that archaic")
+          p:Fact(answer=="I want to know how cars work") and Fact(question=="Oh yeah? Why's that?")
+          f:Fact(answer=="Reliability and convenience bore me") and Fact (question=="Why do you want a classic?")
+           c:Fact(answer=="Not that archaic") and Fact (question=="So, something really simple?")
 then
          Car car = new Car();
-         car.setName("Ford model A");
+         car.setName("Ford Model A");
          List cars = new ArrayList();
          cars.add(car);
          createInformationDialog(cars);
@@ -775,7 +666,9 @@ then
 end
 rule "Sounds good"
 when
-     c: Client(cares_about=="Reliability and convenience bore me") and Client(whyReliabilityBoreHim=="Sounds good")
+               p:Fact(answer=="I want to know how cars work") and Fact(question=="Oh yeah? Why's that?")
+               f:Fact(answer=="Reliability and convenience bore me") and Fact (question=="Why do you want a classic?")
+                c:Fact(answer=="Sounds good") and Fact (question=="So, something really simple?")
 then
          Car car = new Car();
          Car car2=new Car();
@@ -799,19 +692,19 @@ end
 
 rule "I'm erotically drawn to tow trucks and freeway shoulders"
 no-loop
-when p:Preferences(option=="I'm erotically drawn to tow trucks and freeway shoulders")
+when p:Fact(answer=="I'm erotically drawn to tow trucks and freeway shoulders")
      c: Client(cares_about=="Reliability and convenience bore me")
 then
-     String[] myOptions = new String[] {"YES"};
-        List choices = Arrays.asList(myOptions);
+     String[] myanswers = new String[] {"YES"};
+        List choices = Arrays.asList(myanswers);
         String nextQuestion="Also really lovely";
-         c.setWhyReliabilityBoreHim(p.getOption());
+         c.setWhyReliabilityBoreHim(p.getAnswer());
           Car car = new Car();
           car.setName("Lotus Elan");
          List cars = new ArrayList();
          cars.add(car);
          ChoiceDialog dialog = createDialogAuto(choices,nextQuestion, cars);
-          p.setOption(getUserChoice(dialog));
+          p.setAnswer(getUserChoice(dialog));
 
     insert(car);
          update(p);
@@ -822,10 +715,10 @@ end
 rule "Quick and also really lovely"
 no-loop
 when
-p:Preferences(option=="YES")
+p:Fact(answer=="YES")
      c: Client(cares_about=="Reliability and convenience bore me") and Client(whyReliabilityBoreHim=="I'm erotically drawn to tow trucks and freeway shoulders")
 then
-     c.setShouldItBeQuick(p.getOption());
+     c.setShouldItBeQuick(p.getAnswer());
      update(c);
 end
 
@@ -854,33 +747,27 @@ end
 rule "I Guess I'm making some kind of statement about something?"
 no-loop
 when
-p:Preferences(option=="I Guess I'm making some kind of statement about something?")
+p:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
 then
-String[] myOptions = new String[] {"I'm really rich but like to pretend I'm still a hippie",
+String[] myanswers = new String[] {"I'm really rich but like to pretend I'm still a hippie",
 "The mothership left me in Paris", "I run an NYC-Themed diner in Las Vegas", "I live dangerously and nader can suck it",
 "I will only drive vehicles with two distinct luggage areas", "I'm a Kook. An AMERICAN Kook.",
 "I take driving seriously and have the gloves to prove it", "My wallet is on the chain", "I'm a refugee from an alternate future with zeppelins and shit",
 "I like being part of a massive automotive subculture", "I hate people knowing what i drive", "I kinda wanted a motorcycle but i have no balance"};
-List choices = Arrays.asList(myOptions);
+List choices = Arrays.asList(myanswers);
 String nextQuestion="What does soul mean to you?";
 ChoiceDialog dialog = createDialog(choices,nextQuestion);
-p.setOption(getUserChoice(dialog));
-update(p);
+Fact fact = new Fact();
+fact.setAnswer(getUserChoice(dialog));
+fact.setQuestion(nextQuestion);
+insert(fact);
 end
 //1
 rule "I'm really rich but like to pretend I'm still a hippie"
 no-loop
 when
-p:Preferences(option=="I'm really rich but like to pretend I'm still a hippie")
-     c: Client(cares_about=="I Guess I'm making some kind of statement about something?")
-then
-     c.setStatement(p.getOption());
-     update(c);
-end
-
-rule "Client - I'm really rich but like to pretend I'm still a hippie"
-when
-    c: Client(cares_about=="I Guess I'm making some kind of statement about something?") and Client(statement=="I'm really rich but like to pretend I'm still a hippie")
+p:Fact(answer=="I'm really rich but like to pretend I'm still a hippie") and Fact(question=="What does soul mean to you?")
+     f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
 then
          Car car = new Car();
          car.setName("VW Type 2 Microbus");
@@ -889,21 +776,13 @@ then
          createInformationDialog(cars);
          insert(car);
 end
-//2
+
+
 
 rule "The mothership left me in Paris"
-no-loop
 when
-p:Preferences(option=="The mothership left me in Paris")
-     c: Client(cares_about=="I Guess I'm making some kind of statement about something?")
-then
-     c.setStatement(p.getOption());
-     update(c);
-end
-
-rule "Client - The mothership left me in Paris"
-when
-    c: Client(cares_about=="I Guess I'm making some kind of statement about something?") and Client(statement=="The mothership left me in Paris")
+    p:Fact(answer=="The mothership left me in Paris") and Fact(question=="What does soul mean to you?")
+         f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
 then
          Car car = new Car();
          car.setName("Citroen SM");
@@ -912,20 +791,12 @@ then
          createInformationDialog(cars);
          insert(car);
 end
-//3
-rule "I run an NYC-Themed diner in Las Vegas"
-no-loop
-when
-p:Preferences(option=="I run an NYC-Themed diner in Las Vegas")
-     c: Client(cares_about=="I Guess I'm making some kind of statement about something?")
-then
-     c.setStatement(p.getOption());
-     update(c);
-end
 
-rule "Client - I run an NYC-Themed diner in Las Vegas"
+
+rule "I run an NYC-Themed diner in Las Vegas"
 when
-    c: Client(cares_about=="I Guess I'm making some kind of statement about something?") and Client(statement=="I run an NYC-Themed diner in Las Vegas")
+     p:Fact(answer=="I run an NYC-Themed diner in Las Vegas") and Fact(question=="What does soul mean to you?")
+          f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
 then
          Car car = new Car();
          car.setName("Checker Marathon");
@@ -934,20 +805,12 @@ then
          createInformationDialog(cars);
          insert(car);
 end
-//4
-rule "I live dangerously and nader can suck it"
-no-loop
-when
-p:Preferences(option=="I live dangerously and nader can suck it")
-     c: Client(cares_about=="I Guess I'm making some kind of statement about something?")
-then
-     c.setStatement(p.getOption());
-     update(c);
-end
 
-rule "Client - I live dangerously and nader can suck it"
+
+rule "I live dangerously and nader can suck it"
 when
-    c: Client(cares_about=="I Guess I'm making some kind of statement about something?") and Client(statement=="I live dangerously and nader can suck it")
+         p:Fact(answer=="I live dangerously and nader can suck it") and Fact(question=="What does soul mean to you?")
+              f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
 then
          Car car = new Car();
          car.setName("Chevy Corvair");
@@ -960,43 +823,43 @@ end
 rule "I will only drive vehicles with two distinct luggage areas"
 no-loop
 when
-p:Preferences(option=="I will only drive vehicles with two distinct luggage areas")
-     c: Client(cares_about=="I Guess I'm making some kind of statement about something?")
+         p:Fact(answer=="I will only drive vehicles with two distinct luggage areas") and Fact(question=="What does soul mean to you?")
+              f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
 then
 
- String[] myOptions = new String[] {"YES"};
-    List choices = Arrays.asList(myOptions);
+ String[] myanswers = new String[] {"YES"};
+    List choices = Arrays.asList(myanswers);
     String nextQuestion="Something faster?";
-     c.setStatement(p.getOption());
+    // c.setStatement(p.getAnswer());
       Car car = new Car();
       car.setName("VW Type III");
      List cars = new ArrayList();
      cars.add(car);
      ChoiceDialog dialog = createDialogAuto(choices,nextQuestion, cars);
-      p.setOption(getUserChoice(dialog));
+      p.setAnswer(getUserChoice(dialog));
 
 insert(car);
      update(p);
-     update(c);
+ //    update(c);
 end
 
 rule "I will only drive vehicles with two distinct luggage areas - FASTER"
 no-loop
 when
-p:Preferences(option=="YES")
+p:Fact(answer=="YES")
      c: Client(cares_about=="I Guess I'm making some kind of statement about something?") and Client(statement=="I will only drive vehicles with two distinct luggage areas")
 then
 
- String[] myOptions = new String[] {"YES"};
-    List choices = Arrays.asList(myOptions);
+ String[] myanswers = new String[] {"YES"};
+    List choices = Arrays.asList(myanswers);
     String nextQuestion="Even Faster?";
-     c.setReallyFastCar(p.getOption());
+     c.setReallyFastCar(p.getAnswer());
       Car car = new Car();
       car.setName("Porsche 914");
      List cars = new ArrayList();
      cars.add(car);
      ChoiceDialog dialog = createDialogAuto(choices,nextQuestion, cars);
-      p.setOption(getUserChoice(dialog));
+      p.setAnswer(getUserChoice(dialog));
     insert(car);
 
      update(p);
@@ -1015,19 +878,12 @@ then
          insert(car);
 end
 //6
-rule "I'm a Kook. An AMERICAN Kook."
-no-loop
-when
-p:Preferences(option=="I'm a Kook. An AMERICAN Kook.")
-     c: Client(cares_about=="I Guess I'm making some kind of statement about something?")
-then
-     c.setStatement(p.getOption());
-     update(c);
-end
 
-rule  "Client -I'm a Kook. An AMERICAN Kook."
+
+rule  "I'm a Kook. An AMERICAN Kook."
 when
-    c: Client(cares_about=="I Guess I'm making some kind of statement about something?") and Client(statement=="I'm a Kook. An AMERICAN Kook.")
+       p:Fact(answer=="I'm a Kook. An AMERICAN Kook.") and Fact(question=="What does soul mean to you?")
+            f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
 then
          Car car = new Car();
          Car car2 = new Car();
@@ -1044,21 +900,12 @@ then
          insert(car2);
          insert(car3);
 end
-///7
 
-rule "I take driving seriously and have the gloves to prove it"
-no-loop
-when
-p:Preferences(option=="I take driving seriously and have the gloves to prove it")
-     c: Client(cares_about=="I Guess I'm making some kind of statement about something?")
-then
-     c.setStatement(p.getOption());
-     update(c);
-end
 
-rule  "Client I take driving seriously and have the gloves to prove it"
+rule  "I take driving seriously and have the gloves to prove it"
 when
-    c: Client(cares_about=="I Guess I'm making some kind of statement about something?") and Client(statement=="I take driving seriously and have the gloves to prove it")
+       p:Fact(answer=="I take driving seriously and have the gloves to prove it") and Fact(question=="What does soul mean to you?")
+            f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
 then
          Car car = new Car();
          Car car2 = new Car();
@@ -1076,14 +923,14 @@ end
 rule "My wallet is on the chain"
 no-loop
 when
-p:Preferences(option=="My wallet is on the chain")
-     c: Client(cares_about=="I Guess I'm making some kind of statement about something?")
+       p:Fact(answer=="My wallet is on the chain") and Fact(question=="What does soul mean to you?")
+            f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
 then
 
- String[] myOptions = new String[] {"YES"};
-    List choices = Arrays.asList(myOptions);
+ String[] myanswers = new String[] {"YES"};
+    List choices = Arrays.asList(myanswers);
     String nextQuestion="Not for style, I'm tired of losing it";
-     c.setStatement(p.getOption());
+  //   c.setStatement(p.getAnswer());
       Car car = new Car();
       Car car2 = new Car();
       car.setName("Ford Falcon");
@@ -1092,22 +939,22 @@ then
      cars.add(car);
      cars.add(car2);
      ChoiceDialog dialog = createDialogAuto(choices,nextQuestion, cars);
-      p.setOption(getUserChoice(dialog));
+      p.setAnswer(getUserChoice(dialog));
     insert(car);
     insert(car2);
 
      update(p);
-     update(c);
+    // update(c);
 end
 
 rule "Not for style, I'm tired of losing it"
 no-loop
 when
-p:Preferences(option=="YES")
+p:Fact(answer=="YES")
      c: Client(cares_about=="I Guess I'm making some kind of statement about something?") and Client(statement=="My wallet is on the chain")
 then
 System.out.println("wykonalem sie");
-     c.setNoStyleForCar(p.getOption());
+     c.setNoStyleForCar(p.getAnswer());
      update(c);
 end
 
@@ -1123,21 +970,13 @@ then
          createInformationDialog(cars);
          insert(car);
 end
-//9
+
+
+
 
 rule "I'm a refugee from an alternate future with zeppelins and shit"
-no-loop
-when
-p:Preferences(option=="I'm a refugee from an alternate future with zeppelins and shit")
-     c: Client(cares_about=="I Guess I'm making some kind of statement about something?")
-then
-     c.setStatement(p.getOption());
-     update(c);
-end
-
-rule "Client -I'm a refugee from an alternate future with zeppelins and shit"
-when
-    c: Client(cares_about=="I Guess I'm making some kind of statement about something?") and Client(statement=="I'm a refugee from an alternate future with zeppelins and shit")
+when       p:Fact(answer=="I'm a refugee from an alternate future with zeppelins and shit") and Fact(question=="What does soul mean to you?")
+                f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
 then
          Car car = new Car();
          car.setName("Tatra T87");
@@ -1148,19 +987,11 @@ then
 end
 //10
 
-rule "I like being part of a massive automotive subculture"
-no-loop
-when
-p:Preferences(option=="I like being part of a massive automotive subculture")
-     c: Client(cares_about=="I Guess I'm making some kind of statement about something?")
-then
-     c.setStatement(p.getOption());
-     update(c);
-end
 
-rule "Client -I like being part of a massive automotive subculture"
-when
-    c: Client(cares_about=="I Guess I'm making some kind of statement about something?") and Client(statement=="I like being part of a massive automotive subculture")
+rule "I like being part of a massive automotive subculture"
+when     p:Fact(answer=="I like being part of a massive automotive subculture") and Fact(question=="What does soul mean to you?")
+                    f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
+
 then
          Car car = new Car();
          Car car2 = new Car();
@@ -1187,20 +1018,11 @@ then
 end
 //11
 
-
-rule "I hate people knowing what i drive"
-no-loop
-when
-p:Preferences(option=="I hate people knowing what i drive")
-     c: Client(cares_about=="I Guess I'm making some kind of statement about something?")
-then
-     c.setStatement(p.getOption());
-     update(c);
-end
-
 rule "Client -I hate people knowing what i drive"
 when
-    c: Client(cares_about=="I Guess I'm making some kind of statement about something?") and Client(statement=="I hate people knowing what i drive")
+    p:Fact(answer=="Client -I hate people knowing what i drive") and Fact(question=="What does soul mean to you?")
+     f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
+
 then
          Car car = new Car();
          Car car2 = new Car();
@@ -1219,19 +1041,13 @@ then
 end
 //12
 
-rule "I kinda wanted a motorcycle but i have no balance"
-no-loop
-when
-p:Preferences(option=="I kinda wanted a motorcycle but i have no balance")
-     c: Client(cares_about=="I Guess I'm making some kind of statement about something?")
-then
-     c.setStatement(p.getOption());
-     update(c);
-end
 
-rule "Client - I kinda wanted a motorcycle but i have no balance"
+
+rule "I kinda wanted a motorcycle but i have no balance"
 when
-    c: Client(cares_about=="I Guess I'm making some kind of statement about something?") and Client(statement=="I kinda wanted a motorcycle but i have no balance")
+        p:Fact(answer=="I kinda wanted a motorcycle but i have no balance") and Fact(question=="What does soul mean to you?")
+         f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
+
 then
          Car car = new Car();
          car.setName("Lotus 7");
@@ -1252,30 +1068,24 @@ end
 rule "Love speed hate safety"
 no-loop
 when
-p:Preferences(option=="Love speed hate safety")
+p:Fact(answer=="Love speed hate safety") and Fact (question=="Why do you want a classic?")
 then
-String[] myOptions = new String[] {"Fake is fine","I have a death wish","I love speed and money","Fast and cheap"};
-List choices = Arrays.asList(myOptions);
+String[] myanswers = new String[] {"Fake is fine","I have a death wish","I love speed and money","Fast and cheap"};
+List choices = Arrays.asList(myanswers);
 String nextQuestion="Real speed or just feels spedy?";
 ChoiceDialog dialog = createDialog(choices,nextQuestion);
-p.setOption(getUserChoice(dialog));
-update(p);
+Fact fact = new Fact();
+fact.setAnswer(getUserChoice(dialog));
+fact.setQuestion(nextQuestion);
+insert(fact);
 end
 
 
 
 rule "Fake is fine"
 no-loop
-when p:Preferences(option=="Fake is fine")
-     c: Client(cares_about=="Love speed hate safety")
-then
-     c.setWhySpeed(p.getOption());
-     System.out.println("wykonujeeeeeeeeeeeeee sie");
-update(c);
-end
-
-rule "Client Fake is fine"
-when c: Client(cares_about=="Love speed hate safety") and Client(whySpeed=="Fake is fine")
+when p:Fact(answer=="Fake is fine") and Fact (question=="Real speed or just feels spedy?")
+     f:Fact(answer=="Love speed hate safety") and Fact (question=="Why do you want a classic?")
 then
          Car car = new Car();
          Car car2 = new Car();
@@ -1304,19 +1114,9 @@ then
 end
 
 
-
 rule "Fast and cheap"
-no-loop
-when p:Preferences(option=="Fast and cheap")
-     c: Client(cares_about=="Love speed hate safety")
-then
-     c.setWhySpeed(p.getOption());
-     System.out.println("wykonujeddddddddddddsie");
-update(c);
-end
-
-rule "Client Fast and cheap"
-when c: Client(cares_about=="Love speed hate safety") and Client(whySpeed=="Fast and cheap")
+when p:Fact(answer=="Fast and cheap") and Fact (question=="Real speed or just feels spedy?")
+          f:Fact(answer=="Love speed hate safety") and Fact (question=="Why do you want a classic?")
 then
          Car car = new Car();
 
@@ -1339,33 +1139,26 @@ end
 
 rule "I have a death wish"
 no-loop
-when p:Preferences(option=="I have a death wish")
-     c: Client(cares_about=="Love speed hate safety")
+when p:Fact(answer=="I have a death wish") and Fact (question=="Real speed or just feels spedy?")
+     f:Fact(answer=="Love speed hate safety") and Fact (question=="Why do you want a classic?")
 then
-     c.setWhySpeed(p.getOption());
-     System.out.println("wishwish");
-         String[] myOptions = new String[] {"Crushed by V8 in tiny space","Electrocuted by wiper switch","Blaze of glory","Car, tree","Run out of talent, off cliff"};
-         List choices = Arrays.asList(myOptions);
+
+
+         String[] myanswers = new String[] {"Crushed by V8 in tiny space","Electrocuted by wiper switch","Blaze of glory","Car, tree","Run out of talent, off cliff"};
+         List choices = Arrays.asList(myanswers);
          String nextQuestion="How do you want to go?";
          ChoiceDialog dialog = createDialog(choices,nextQuestion);
-         p.setOption(getUserChoice(dialog));
-
-     update(p);
-update(c);
+         Fact fact = new Fact();
+         fact.setQuestion(nextQuestion);
+         fact.setAnswer(getUserChoice(dialog));
+         insert(fact);
 end
+
 
 rule "Crushed by V8 in tiny space"
-no-loop
-when p:Preferences(option=="Crushed by V8 in tiny space")
-     c: Client(cares_about=="Love speed hate safety") and Client(whySpeed=="I have a death wish")
-then
-     c.setWhyDeath(p.getOption());
-
-update(c);
-end
-
-rule "Client Crushed by V8 in tiny space"
-when c: Client(cares_about=="Love speed hate safety") and Client(whySpeed=="I have a death wish") and Client(whyDeath=="Crushed by V8 in tiny space")
+when  p:Fact(answer=="I have a death wish") and Fact (question=="Real speed or just feels spedy?")
+          f:Fact(answer=="Love speed hate safety") and Fact (question=="Why do you want a classic?")
+                v:Fact(answer=="Crushed by V8 in tiny space") and Fact (question=="How do you want to go?")
 then
          Car car = new Car();
          car.setName("Sunbeam Tiger");
@@ -1376,18 +1169,12 @@ then
 
 end
 
+
+
 rule "Electrocuted by wiper switch"
-no-loop
-when p:Preferences(option=="Electrocuted by wiper switch")
-     c: Client(cares_about=="Love speed hate safety") and Client(whySpeed=="I have a death wish")
-then
-     c.setWhyDeath(p.getOption());
-
-update(c);
-end
-
-rule "Client Electrocuted by wiper switch"
-when c: Client(cares_about=="Love speed hate safety") and Client(whySpeed=="I have a death wish") and Client(whyDeath=="Electrocuted by wiper switch")
+when p:Fact(answer=="I have a death wish") and Fact (question=="Real speed or just feels spedy?")
+               f:Fact(answer=="Love speed hate safety") and Fact (question=="Why do you want a classic?")
+                     v:Fact(answer=="Electrocuted by wiper switch") and Fact (question=="How do you want to go?")
 then
          Car car = new Car();
          car.setName("Jaguar E-Type");
@@ -1397,18 +1184,12 @@ then
          insert(car);
 
 end
+
+
 rule "Blaze of glory"
-no-loop
-when p:Preferences(option=="Blaze of glory")
-     c: Client(cares_about=="Love speed hate safety") and Client(whySpeed=="I have a death wish")
-then
-     c.setWhyDeath(p.getOption());
-
-update(c);
-end
-
-rule "Client Blaze of glory"
-when c: Client(cares_about=="Love speed hate safety") and Client(whySpeed=="I have a death wish") and Client(whyDeath=="Blaze of glory")
+when p:Fact(answer=="I have a death wish") and Fact (question=="Real speed or just feels spedy?")
+                    f:Fact(answer=="Love speed hate safety") and Fact (question=="Why do you want a classic?")
+                          v:Fact(answer=="Blaze of glory") and Fact (question=="How do you want to go?")
 then
          Car car = new Car();
          car.setName("Ferrari Testarossa");
@@ -1419,18 +1200,12 @@ then
 
 end
 
+
+
 rule "Run out of talent, off cliff"
-no-loop
-when p:Preferences(option=="Run out of talent, off cliff")
-     c: Client(cares_about=="Love speed hate safety") and Client(whySpeed=="I have a death wish")
-then
-     c.setWhyDeath(p.getOption());
-
-update(c);
-end
-
-rule "Client Run out of talent, off cliff"
-when c: Client(cares_about=="Love speed hate safety") and Client(whySpeed=="I have a death wish") and Client(whyDeath=="Run out of talent, off cliff")
+when p:Fact(answer=="I have a death wish") and Fact (question=="Real speed or just feels spedy?")
+                    f:Fact(answer=="Love speed hate safety") and Fact (question=="Why do you want a classic?")
+                          v:Fact(answer=="Run out of talent, off cliff") and Fact (question=="How do you want to go?")
 then
          Car car = new Car();
          car.setName("Porsche Spyder");
@@ -1441,18 +1216,11 @@ then
 
 end
 
+
 rule "Car, tree"
-no-loop
-when p:Preferences(option=="Car, tree")
-     c: Client(cares_about=="Love speed hate safety") and Client(whySpeed=="I have a death wish")
-then
-     c.setWhyDeath(p.getOption());
-
-update(c);
-end
-
-rule "Client Car, tree"
-when c: Client(cares_about=="Love speed hate safety") and Client(whySpeed=="I have a death wish") and Client(whyDeath=="Car, tree")
+when p:Fact(answer=="I have a death wish") and Fact (question=="Real speed or just feels spedy?")
+                    f:Fact(answer=="Love speed hate safety") and Fact (question=="Why do you want a classic?")
+                          v:Fact(answer=="Car, tree") and Fact (question=="How do you want to go?")
 then
          Car car = new Car();
          Car car2 = new Car();
@@ -1470,33 +1238,28 @@ end
 
 rule "I love speed and money"
 no-loop
-when p:Preferences(option=="I love speed and money")
-     c: Client(cares_about=="Love speed hate safety")
+when p:Fact(answer=="I love speed and money") and Fact (question=="Real speed or just feels spedy?")
+         f:Fact(answer=="Love speed hate safety") and Fact (question=="Why do you want a classic?")
 then
-     c.setWhySpeed(p.getOption());
 
-         String[] myOptions = new String[] {"Some kind of Duke and I rally","My goal is to drive my Childhood bedroom posters","I have a weird Fetish where I like people asking Is it a Replica?"};
-         List choices = Arrays.asList(myOptions);
+
+         String[] myanswers = new String[] {"Some kind of Duke and I rally","My goal is to drive my Childhood bedroom posters","I have a weird Fetish where I like people asking Is it a Replica?"};
+         List choices = Arrays.asList(myanswers);
          String nextQuestion="Great, who are you?";
          ChoiceDialog dialog = createDialog(choices,nextQuestion);
-         p.setOption(getUserChoice(dialog));
+         Fact fact = new Fact();
+         fact.setQuestion(nextQuestion);
+         fact.setAnswer(getUserChoice(dialog));
+         insert(fact);
 
-     update(p);
-update(c);
+
 end
 
 rule "Some kind of Duke and I rally"
 no-loop
-when p:Preferences(option=="Some kind of Duke and I rally")
-     c: Client(cares_about=="Love speed hate safety") and Client(whySpeed=="I love speed and money")
-then
-     c.setWhyLoveSpeed(p.getOption());
-
-update(c);
-end
-
-rule "Client Some kind of Duke and I rally"
-when c: Client(cares_about=="Love speed hate safety") and Client(whySpeed=="I love speed and money") and Client(whyLoveSpeed=="Some kind of Duke and I rally")
+when p:Fact(answer=="I love speed and money") and Fact (question=="Real speed or just feels spedy?")
+         f:Fact(answer=="Love speed hate safety") and Fact (question=="Why do you want a classic?")
+             v:Fact(answer=="Some kind of Duke and I rally") and Fact (question=="Great, who are you?")
 then
          Car car = new Car();
          car.setName("Lancia Stratos");
@@ -1504,22 +1267,14 @@ then
          cars.add(car);
          createInformationDialog(cars);
          insert(car);
-
 end
+
 
 
 rule "My goal is to drive my Childhood bedroom posters"
-no-loop
-when p:Preferences(option=="My goal is to drive my Childhood bedroom posters")
-     c: Client(cares_about=="Love speed hate safety") and Client(whySpeed=="I love speed and money")
-then
-     c.setWhyLoveSpeed(p.getOption());
-
-update(c);
-end
-
-rule "Client My goal is to drive my Childhood bedroom posters"
-when c: Client(cares_about=="Love speed hate safety") and Client(whySpeed=="I love speed and money") and Client(whyLoveSpeed=="My goal is to drive my Childhood bedroom posters")
+when p:Fact(answer=="I love speed and money") and Fact (question=="Real speed or just feels spedy?")
+         f:Fact(answer=="Love speed hate safety") and Fact (question=="Why do you want a classic?")
+             v:Fact(answer=="My goal is to drive my Childhood bedroom posters") and Fact (question=="Great, who are you?")
 then
          Car car = new Car();
          Car car2= new Car();
@@ -1535,17 +1290,9 @@ end
 
 
 rule "I have a weird Fetish where I like people asking Is it a Replica?"
-no-loop
-when p:Preferences(option=="I have a weird Fetish where I like people asking Is it a Replica?")
-     c: Client(cares_about=="Love speed hate safety") and Client(whySpeed=="I love speed and money")
-then
-     c.setWhyLoveSpeed(p.getOption());
-
-update(c);
-end
-
-rule "Client I have a weird Fetish where I like people asking Is it a Replica?"
-when c: Client(cares_about=="Love speed hate safety") and Client(whySpeed=="I love speed and money") and Client(whyLoveSpeed=="I have a weird Fetish where I like people asking Is it a Replica?")
+when p:Fact(answer=="I love speed and money") and Fact (question=="Real speed or just feels spedy?")
+         f:Fact(answer=="Love speed hate safety") and Fact (question=="Why do you want a classic?")
+             v:Fact(answer=="I have a weird Fetish where I like people asking Is it a Replica?") and Fact (question=="Great, who are you?")
 then
          Car car = new Car();
          Car car2= new Car();
