@@ -16,6 +16,7 @@ public class MainController {
 
     @FXML
     public void next(MouseEvent event) {
+
         ks = KieServices.Factory.get();
         kc = ks.getKieClasspathContainer();
         KieSession ksession = kc.newKieSession("ksession-rules");

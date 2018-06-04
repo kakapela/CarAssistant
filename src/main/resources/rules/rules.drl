@@ -8,6 +8,24 @@ import java.util.List
 import java.util.Arrays
 import com.jfoenix.controls.JFXButton
 import javafx.scene.control.Alert
+import javafx.util.Pair
+import javafx.scene.control.Dialog
+import javafx.scene.image.ImageView
+import javafx.scene.control.ButtonType
+import javafx.scene.control.ButtonBar
+import javafx.scene.layout.GridPane
+import javafx.geometry.Insets
+import javafx.scene.control.TextField
+import javafx.scene.control.PasswordField
+import javafx.scene.Node
+import javafx.application.Platform
+import javafx.scene.image.Image
+import javafx.scene.paint.Color
+import javafx.scene.text.Font
+import javafx.scene.control.CheckBox
+import javafx.scene.control.Button
+import javafx.event.EventHandler
+import javafx.scene.input.MouseEvent
 
 
 //======================================================================================DEKLARACJE KLAS=================================================================
@@ -372,77 +390,42 @@ end
 
 rule "It means riding in it is like sitting on a Sofa"
 no-loop
-when p:Fact(answer=="It means riding in it is like sitting on a Sofa")
-     c: Client(cares_about=="New cars have no soul")
+when  f:Fact(answer=="New cars have no soul") and Fact (question=="Why do you want a classic?")
+p:Fact( answer =="It means riding in it is like sitting on a Sofa") and Fact(question=="What does soul mean to you?")
+
 then
 
-
-
-    c.setMeaningOfSoul(p.getAnswer());
-    String[] myanswers = new String[] {"Yes"};
-    List choices = Arrays.asList(myanswers);
     String nextQuestion="A huge, fast FWD Sofa?";
     Car car = new Car();
 
     car.setName("Lincoln Town Car");
      List cars = new ArrayList();
              cars.add(car);
-    ChoiceDialog dialog = createDialogAuto(choices,nextQuestion, cars);
-//    ChoiceDialog dialog = createDialog(choices,nextQuestion);
-    p.setAnswer(getUserChoice(dialog));
+          String nextAnswer = createDialogWithCarAndQuestion(cars,nextQuestion);
+          Fact fact = new Fact();
+          fact.setAnswer(nextAnswer);
+          fact.setQuestion(nextQuestion);
 
-
-update(p);
-update(c);
+insert(car);
+insert(fact);
 end
 
 
 rule "A huge, fast FWD Sofa?"
 no-loop
-when p:Fact(answer=="Yes")
-     c:Client(cares_about=="New cars have no soul") and Client(meaningOfSoul=="It means riding in it is like sitting on a Sofa")
+when f:Fact(answer=="New cars have no soul") and Fact (question=="Why do you want a classic?")
+     p:Fact( answer =="It means riding in it is like sitting on a Sofa") and Fact(question=="What does soul mean to you?")
+     c:Fact(answer=="YES") and Fact(question=="A huge, fast FWD Sofa?")
 then
-    c.setWhySofa(p.getAnswer());
-
-update(c);
-end
-
-
-rule "Client A huge, fast FWD Sofa?"
-when c: Client(cares_about=="New cars have no soul") and Client(meaningOfSoul=="It means riding in it is like sitting on a Sofa") and Client(whySofa=="Yes")
-then
-
-         Car car = new Car();
-
-         car.setName("Olds Tornado");
-
+     Car car = new Car();
+        car.setName("Olds Toronado");
          List cars = new ArrayList();
-         cars.add(car);
-
-
-         createInformationDialog(cars);
-         insert(car);
+                 cars.add(car);
+                 createInformationDialog(cars);
+                 insert(car);
 
 end
 
-
-
-rule "No A huge, fast FWD Sofa?"
-no-loop
-when p:Fact(answer=="Not")
-     c:Client(cares_about=="New cars have no soul") and Client(meaningOfSoul=="It means riding in it is like sitting on a Sofa")
-then
-    c.setWhySofa(p.getAnswer());
-    System.out.println("wykonuje sie Not ");
-update(c);
-end
-
-
-rule "Client No A huge, fast FWD Sofa?"
-when c: Client(cares_about=="New cars have no soul") and Client(meaningOfSoul=="It means riding in it is like sitting on a Sofa") and Client(whySofa=="Not")
-then
-
-end
 
 
 //***************************
@@ -755,7 +738,7 @@ String[] myanswers = new String[] {"I'm really rich but like to pretend I'm stil
 "I take driving seriously and have the gloves to prove it", "My wallet is on the chain", "I'm a refugee from an alternate future with zeppelins and shit",
 "I like being part of a massive automotive subculture", "I hate people knowing what i drive", "I kinda wanted a motorcycle but i have no balance"};
 List choices = Arrays.asList(myanswers);
-String nextQuestion="What does soul mean to you?";
+String nextQuestion="Great. What statement?";
 ChoiceDialog dialog = createDialog(choices,nextQuestion);
 Fact fact = new Fact();
 fact.setAnswer(getUserChoice(dialog));
@@ -766,7 +749,7 @@ end
 rule "I'm really rich but like to pretend I'm still a hippie"
 no-loop
 when
-p:Fact(answer=="I'm really rich but like to pretend I'm still a hippie") and Fact(question=="What does soul mean to you?")
+p:Fact(answer=="I'm really rich but like to pretend I'm still a hippie") and Fact(question=="Great. What statement?")
      f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
 then
          Car car = new Car();
@@ -781,7 +764,7 @@ end
 
 rule "The mothership left me in Paris"
 when
-    p:Fact(answer=="The mothership left me in Paris") and Fact(question=="What does soul mean to you?")
+    p:Fact(answer=="The mothership left me in Paris") and Fact(question=="Great. What statement?")
          f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
 then
          Car car = new Car();
@@ -795,7 +778,7 @@ end
 
 rule "I run an NYC-Themed diner in Las Vegas"
 when
-     p:Fact(answer=="I run an NYC-Themed diner in Las Vegas") and Fact(question=="What does soul mean to you?")
+     p:Fact(answer=="I run an NYC-Themed diner in Las Vegas") and Fact(question=="Great. What statement?")
           f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
 then
          Car car = new Car();
@@ -809,7 +792,7 @@ end
 
 rule "I live dangerously and nader can suck it"
 when
-         p:Fact(answer=="I live dangerously and nader can suck it") and Fact(question=="What does soul mean to you?")
+         p:Fact(answer=="I live dangerously and nader can suck it") and Fact(question=="Great. What statement?")
               f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
 then
          Car car = new Car();
@@ -823,7 +806,7 @@ end
 rule "I will only drive vehicles with two distinct luggage areas"
 no-loop
 when
-         p:Fact(answer=="I will only drive vehicles with two distinct luggage areas") and Fact(question=="What does soul mean to you?")
+         p:Fact(answer=="I will only drive vehicles with two distinct luggage areas") and Fact(question=="Great. What statement?")
               f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
 then
 
@@ -882,7 +865,7 @@ end
 
 rule  "I'm a Kook. An AMERICAN Kook."
 when
-       p:Fact(answer=="I'm a Kook. An AMERICAN Kook.") and Fact(question=="What does soul mean to you?")
+       p:Fact(answer=="I'm a Kook. An AMERICAN Kook.") and Fact(question=="Great. What statement?")
             f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
 then
          Car car = new Car();
@@ -904,7 +887,7 @@ end
 
 rule  "I take driving seriously and have the gloves to prove it"
 when
-       p:Fact(answer=="I take driving seriously and have the gloves to prove it") and Fact(question=="What does soul mean to you?")
+       p:Fact(answer=="I take driving seriously and have the gloves to prove it") and Fact(question=="Great. What statement?")
             f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
 then
          Car car = new Car();
@@ -923,14 +906,11 @@ end
 rule "My wallet is on the chain"
 no-loop
 when
-       p:Fact(answer=="My wallet is on the chain") and Fact(question=="What does soul mean to you?")
+       p:Fact(answer=="My wallet is on the chain") and Fact(question=="Great. What statement?")
             f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
 then
 
- String[] myanswers = new String[] {"YES"};
-    List choices = Arrays.asList(myanswers);
     String nextQuestion="Not for style, I'm tired of losing it";
-  //   c.setStatement(p.getAnswer());
       Car car = new Car();
       Car car2 = new Car();
       car.setName("Ford Falcon");
@@ -938,24 +918,30 @@ then
      List cars = new ArrayList();
      cars.add(car);
      cars.add(car2);
-     ChoiceDialog dialog = createDialogAuto(choices,nextQuestion, cars);
-      p.setAnswer(getUserChoice(dialog));
+     String nextAnswer = createDialogWithCarAndQuestion(cars,nextQuestion);
+     Fact fact = new Fact();
+     fact.setQuestion(nextQuestion);
+     fact.setAnswer(nextAnswer);
+     insert(fact);
     insert(car);
     insert(car2);
 
-     update(p);
-    // update(c);
 end
 
 rule "Not for style, I'm tired of losing it"
 no-loop
 when
-p:Fact(answer=="YES")
-     c: Client(cares_about=="I Guess I'm making some kind of statement about something?") and Client(statement=="My wallet is on the chain")
+      p:Fact(answer=="My wallet is on the chain") and Fact(question=="Great. What statement?")
+      f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
+      c: Fact(answer=="YES") and Fact(question=="Not for style, I'm tired of losing it")
 then
-System.out.println("wykonalem sie");
-     c.setNoStyleForCar(p.getAnswer());
-     update(c);
+     Car car = new Car();
+            car.setName("Rambler American");
+             List cars = new ArrayList();
+                     cars.add(car);
+                     createInformationDialog(cars);
+                     insert(car);
+
 end
 
 rule "Client Not for style, I'm tired of losing it"
@@ -975,7 +961,7 @@ end
 
 
 rule "I'm a refugee from an alternate future with zeppelins and shit"
-when       p:Fact(answer=="I'm a refugee from an alternate future with zeppelins and shit") and Fact(question=="What does soul mean to you?")
+when       p:Fact(answer=="I'm a refugee from an alternate future with zeppelins and shit") and Fact(question=="Great. What statement?")
                 f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
 then
          Car car = new Car();
@@ -989,7 +975,7 @@ end
 
 
 rule "I like being part of a massive automotive subculture"
-when     p:Fact(answer=="I like being part of a massive automotive subculture") and Fact(question=="What does soul mean to you?")
+when     p:Fact(answer=="I like being part of a massive automotive subculture") and Fact(question=="Great. What statement?")
                     f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
 
 then
@@ -1020,7 +1006,7 @@ end
 
 rule "Client -I hate people knowing what i drive"
 when
-    p:Fact(answer=="Client -I hate people knowing what i drive") and Fact(question=="What does soul mean to you?")
+    p:Fact(answer=="Client -I hate people knowing what i drive") and Fact(question=="Great. What statement?")
      f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
 
 then
@@ -1045,7 +1031,7 @@ end
 
 rule "I kinda wanted a motorcycle but i have no balance"
 when
-        p:Fact(answer=="I kinda wanted a motorcycle but i have no balance") and Fact(question=="What does soul mean to you?")
+        p:Fact(answer=="I kinda wanted a motorcycle but i have no balance") and Fact(question=="Great. What statement?")
          f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
 
 then
@@ -1362,4 +1348,56 @@ function ChoiceDialog createDialogAuto(List myChoices,String nextQuestion, List 
     dialog.setContentText(nextQuestion);
     return dialog;
 
+}
+function String createDialogWithCarAndQuestion(List cars,String nextQuestion){
+String nextAnswer="";
+
+Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+alert.setTitle("Car Assistant");
+alert.setHeaderText("We found these cars for you! ");
+
+String information="";
+for (int i =0; i<cars.size(); i++){
+    Car car = (Car)cars.get(i);
+    information+="Car: " + car.getName()+"\n";
+    }
+
+GridPane grid = new GridPane();
+grid.setHgap(3);
+grid.setVgap(2);
+grid.setPadding(new Insets(20, 15, 20, 15));
+
+Label info = new Label();
+info.setText(information);
+info.setFont(new Font("Cambria", 20));
+info.setTextFill(Color.web("#228B22"));
+ grid.add(info,0,0);
+
+
+ Label question = new Label();
+ question.setText("Question: " + nextQuestion);
+question.setFont(new Font("Cambria", 20));
+question.setTextFill(Color.web("#DC143C"));
+ grid.add(question,3,3);
+
+
+alert.getDialogPane().getButtonTypes().removeAll(ButtonType.OK,ButtonType.CANCEL);
+ButtonType next = new ButtonType("Yes",ButtonBar.ButtonData.OK_DONE);
+ButtonType finish= new ButtonType("No, Finish",ButtonBar.ButtonData.OK_DONE);
+
+alert.getDialogPane().getButtonTypes().addAll(next,finish);
+
+
+alert.getDialogPane().setContent(grid);
+
+
+Optional<ButtonType> result = alert.showAndWait();
+if (result.get() == next){
+nextAnswer="YES";
+
+}
+else
+nextAnswer="NO";
+System.out.println("Twoja decyzja to " + nextAnswer);
+return  nextAnswer;
 }
