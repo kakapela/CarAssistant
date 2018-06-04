@@ -26,6 +26,7 @@ import javafx.scene.control.CheckBox
 import javafx.scene.control.Button
 import javafx.event.EventHandler
 import javafx.scene.input.MouseEvent
+import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer
 
 
 //======================================================================================DEKLARACJE KLAS=================================================================
@@ -101,7 +102,6 @@ String[] myanswers = new String[] {"Easy: ability to drive off a pier into an Es
 List choices = Arrays.asList(myanswers);
 String nextQuestion="What does soul mean to you?";
 ChoiceDialog dialog = createDialog(choices,nextQuestion);
-System.out.println("FACT");
 Fact fact2 = new Fact();
 fact2.setQuestion(nextQuestion);
 fact2.setAnswer(getUserChoice(dialog));
@@ -609,7 +609,6 @@ when p:Fact(answer=="I want to know how cars work") and Fact(question=="Oh yeah?
 then
        String[] myanswers = new String[] {"More archaic","Not that archaic","Sounds good"};
        List choices = Arrays.asList(myanswers);
-       System.out.println(choices);
        String nextQuestion="So, something really simple?";
        ChoiceDialog dialog =  createDialog(choices,nextQuestion);
        Fact fact = new Fact();
@@ -737,19 +736,23 @@ String[] myanswers = new String[] {"I'm really rich but like to pretend I'm stil
 "I will only drive vehicles with two distinct luggage areas", "I'm a Kook. An AMERICAN Kook.",
 "I take driving seriously and have the gloves to prove it", "My wallet is on the chain", "I'm a refugee from an alternate future with zeppelins and shit",
 "I like being part of a massive automotive subculture", "I hate people knowing what i drive", "I kinda wanted a motorcycle but i have no balance"};
+
 List choices = Arrays.asList(myanswers);
 String nextQuestion="Great. What statement?";
+
 ChoiceDialog dialog = createDialog(choices,nextQuestion);
+
 Fact fact = new Fact();
 fact.setAnswer(getUserChoice(dialog));
 fact.setQuestion(nextQuestion);
 insert(fact);
 end
+
 //1
 rule "I'm really rich but like to pretend I'm still a hippie"
 no-loop
 when
-p:Fact(answer=="I'm really rich but like to pretend I'm still a hippie") and Fact(question=="Great. What statement?")
+    p:Fact(answer=="I'm really rich but like to pretend I'm still a hippie") and Fact(question=="Great. What statement?")
      f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
 then
          Car car = new Car();
@@ -760,12 +763,10 @@ then
          insert(car);
 end
 
-
-
 rule "The mothership left me in Paris"
 when
     p:Fact(answer=="The mothership left me in Paris") and Fact(question=="Great. What statement?")
-         f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
+    f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
 then
          Car car = new Car();
          car.setName("Citroen SM");
@@ -775,11 +776,10 @@ then
          insert(car);
 end
 
-
 rule "I run an NYC-Themed diner in Las Vegas"
 when
      p:Fact(answer=="I run an NYC-Themed diner in Las Vegas") and Fact(question=="Great. What statement?")
-          f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
+     f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
 then
          Car car = new Car();
          car.setName("Checker Marathon");
@@ -789,11 +789,10 @@ then
          insert(car);
 end
 
-
 rule "I live dangerously and nader can suck it"
 when
-         p:Fact(answer=="I live dangerously and nader can suck it") and Fact(question=="Great. What statement?")
-              f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
+    p:Fact(answer=="I live dangerously and nader can suck it") and Fact(question=="Great. What statement?")
+    f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
 then
          Car car = new Car();
          car.setName("Chevy Corvair");
@@ -806,52 +805,53 @@ end
 rule "I will only drive vehicles with two distinct luggage areas"
 no-loop
 when
-         p:Fact(answer=="I will only drive vehicles with two distinct luggage areas") and Fact(question=="Great. What statement?")
-              f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
+    p:Fact(answer=="I will only drive vehicles with two distinct luggage areas") and Fact(question=="Great. What statement?")
+    f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
 then
-
- String[] myanswers = new String[] {"YES"};
-    List choices = Arrays.asList(myanswers);
     String nextQuestion="Something faster?";
-    // c.setStatement(p.getAnswer());
+    System.out.println("QUESTION " + nextQuestion);
       Car car = new Car();
       car.setName("VW Type III");
      List cars = new ArrayList();
      cars.add(car);
-     ChoiceDialog dialog = createDialogAuto(choices,nextQuestion, cars);
-      p.setAnswer(getUserChoice(dialog));
-
-insert(car);
-     update(p);
- //    update(c);
+     String nextanswer = createDialogWithCarAndQuestion(cars,nextQuestion);
+     Fact fact  = new Fact();
+     fact.setAnswer(nextanswer);
+     fact.setQuestion(nextQuestion);
+    insert(fact);
+    insert(car);
 end
 
 rule "I will only drive vehicles with two distinct luggage areas - FASTER"
 no-loop
 when
-p:Fact(answer=="YES")
-     c: Client(cares_about=="I Guess I'm making some kind of statement about something?") and Client(statement=="I will only drive vehicles with two distinct luggage areas")
+    p:Fact(answer=="I will only drive vehicles with two distinct luggage areas") and Fact(question=="Great. What statement?")
+    f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
+    c:Fact(answer=="YES") and Fact(question=="Something faster?")
 then
-
- String[] myanswers = new String[] {"YES"};
-    List choices = Arrays.asList(myanswers);
     String nextQuestion="Even Faster?";
-     c.setReallyFastCar(p.getAnswer());
+    System.out.println("QUESTION: " + nextQuestion);
       Car car = new Car();
       car.setName("Porsche 914");
      List cars = new ArrayList();
      cars.add(car);
-     ChoiceDialog dialog = createDialogAuto(choices,nextQuestion, cars);
-      p.setAnswer(getUserChoice(dialog));
+     String answerPart = createDialogWithCarAndQuestion(cars,nextQuestion);
+     String nextanswer =answerPart+", even faster";
+    Fact fact=  new Fact();
+    fact.setAnswer(nextanswer);
+    fact.setQuestion(nextQuestion);
     insert(car);
+    insert(fact);
 
-     update(p);
-     update(c);
 end
 
 rule "I will only drive vehicles with two distinct luggage areas - EVEN FASTER"
+no-loop
 when
-    c: Client(cares_about=="I Guess I'm making some kind of statement about something?") and Client(statement=="I will only drive vehicles with two distinct luggage areas") and Client(reallyFastCar=="YES")
+    p:Fact(answer=="I will only drive vehicles with two distinct luggage areas") and Fact(question=="Great. What statement?")
+    f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
+    c:Fact(answer=="YES") and Fact(question=="Something faster?")
+    d:Fact(answer=="YES, even faster") and Fact(question=="Even Faster?")
 then
          Car car = new Car();
          car.setName("De Tomaso Mangusta");
@@ -860,13 +860,11 @@ then
          createInformationDialog(cars);
          insert(car);
 end
-//6
-
 
 rule  "I'm a Kook. An AMERICAN Kook."
 when
        p:Fact(answer=="I'm a Kook. An AMERICAN Kook.") and Fact(question=="Great. What statement?")
-            f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
+       f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
 then
          Car car = new Car();
          Car car2 = new Car();
@@ -884,11 +882,10 @@ then
          insert(car3);
 end
 
-
 rule  "I take driving seriously and have the gloves to prove it"
 when
        p:Fact(answer=="I take driving seriously and have the gloves to prove it") and Fact(question=="Great. What statement?")
-            f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
+       f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
 then
          Car car = new Car();
          Car car2 = new Car();
@@ -901,15 +898,13 @@ then
          insert(car);
          insert(car2);
 end
-//8
 
 rule "My wallet is on the chain"
 no-loop
 when
        p:Fact(answer=="My wallet is on the chain") and Fact(question=="Great. What statement?")
-            f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
+       f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
 then
-
     String nextQuestion="Not for style, I'm tired of losing it";
       Car car = new Car();
       Car car2 = new Car();
@@ -925,7 +920,6 @@ then
      insert(fact);
     insert(car);
     insert(car2);
-
 end
 
 rule "Not for style, I'm tired of losing it"
@@ -936,33 +930,16 @@ when
       c: Fact(answer=="YES") and Fact(question=="Not for style, I'm tired of losing it")
 then
      Car car = new Car();
-            car.setName("Rambler American");
-             List cars = new ArrayList();
-                     cars.add(car);
-                     createInformationDialog(cars);
-                     insert(car);
-
+     car.setName("Rambler American");
+     List cars = new ArrayList();
+     cars.add(car);
+     createInformationDialog(cars);
+     insert(car);
 end
-
-rule "Client Not for style, I'm tired of losing it"
-when
-    c: Client(cares_about=="I Guess I'm making some kind of statement about something?") and Client(statement=="My wallet is on the chain")
-    and Client(noStyleForCar=="YES")
-then
-         Car car = new Car();
-         car.setName("Rambler American");
-         List cars = new ArrayList();
-         cars.add(car);
-         createInformationDialog(cars);
-         insert(car);
-end
-
-
-
 
 rule "I'm a refugee from an alternate future with zeppelins and shit"
-when       p:Fact(answer=="I'm a refugee from an alternate future with zeppelins and shit") and Fact(question=="Great. What statement?")
-                f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
+when   p:Fact(answer=="I'm a refugee from an alternate future with zeppelins and shit") and Fact(question=="Great. What statement?")
+       f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
 then
          Car car = new Car();
          car.setName("Tatra T87");
@@ -972,11 +949,9 @@ then
          insert(car);
 end
 //10
-
-
 rule "I like being part of a massive automotive subculture"
-when     p:Fact(answer=="I like being part of a massive automotive subculture") and Fact(question=="Great. What statement?")
-                    f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
+when   p:Fact(answer=="I like being part of a massive automotive subculture") and Fact(question=="Great. What statement?")
+       f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
 
 then
          Car car = new Car();
@@ -1003,12 +978,10 @@ then
          insert(car5);
 end
 //11
-
 rule "Client -I hate people knowing what i drive"
 when
     p:Fact(answer=="Client -I hate people knowing what i drive") and Fact(question=="Great. What statement?")
      f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
-
 then
          Car car = new Car();
          Car car2 = new Car();
@@ -1026,14 +999,10 @@ then
          insert(car3);
 end
 //12
-
-
-
 rule "I kinda wanted a motorcycle but i have no balance"
 when
         p:Fact(answer=="I kinda wanted a motorcycle but i have no balance") and Fact(question=="Great. What statement?")
          f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
-
 then
          Car car = new Car();
          car.setName("Lotus 7");
@@ -1044,12 +1013,9 @@ then
 end
 //**************************************************************************** FINISHED ' I GUESS ' PATH *******************************************************************************
 
-
-
 //*******************************************************************************************************
 //Love speed hate safety
 //************************************************************************************************************888
-
 
 rule "Love speed hate safety"
 no-loop
@@ -1313,6 +1279,8 @@ function ChoiceDialog createDialog(List myChoices,String nextQuestion){
     dialog.setTitle("Car Asisstant");
     dialog.setHeaderText(nextQuestion);
     dialog.setContentText("Type an answer:");
+        System.out.println("QUESTION: " + nextQuestion);
+
     return dialog;
 
 }
@@ -1320,7 +1288,7 @@ function ChoiceDialog createDialog(List myChoices,String nextQuestion){
 function String getUserChoice(ChoiceDialog dialog){
     Optional<String> wynik= dialog.showAndWait();
         if (wynik.isPresent()){
-            System.out.println("Your choice: " + wynik.get());
+            System.out.println("ANSWER: " + wynik.get() + "\n");
         }
         return wynik.get();
 }
@@ -1398,6 +1366,7 @@ nextAnswer="YES";
 }
 else
 nextAnswer="NO";
-System.out.println("Twoja decyzja to " + nextAnswer);
+
+System.out.println("ANSWER: " + nextAnswer + "\n");
 return  nextAnswer;
 }
