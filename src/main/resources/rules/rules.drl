@@ -44,11 +44,6 @@ end
 
 //==================================================================================== RULES ==============================================================================
 
-//guzik uruchamia dialog, dialog czeka za kliknieciem w guzik OK z wybraną przez użytkownika decyzją i wtedy jest tworzony obiekt preferences
-//w inicjalizacji jest tylko pobieranie decyzji i zrobienie nowego klienta
-
-//na poczatku uruchamiamy pierwszy dialog. ustalamy pytanie oraz propozycje wyboru. Tworzymy obiekt typu Fact aby miec dostep do ostatniej decyzji uzytkownika. Wkladamy go do bazy wiedzy.
-//tworzymy rowniez nowego klienta z pierwsza preferencja
 rule "Initalization"
 when
 then
@@ -70,10 +65,6 @@ end
 //***************************
 //HAVE NO SOUL
 //***************************
-//ODNOSI SIE DO PIERWSZEGO PYTANIA
-//na poczatku dialogu w pierwszym pytaniu sprawdzamy tylko preferencje uzytkownika czyli jego wybor
-//w sekjci then ustawiamy nowy dialog oraz zapisujemy kolejna, ostatnią odpowiedz Klienta do obiektu typu Fact -> UPDEJTUJEMY TEN OBIEKT W BAZIE
-//no-loop - dzieki temu unikamy zapetlenia sie reguły
 
 
 
