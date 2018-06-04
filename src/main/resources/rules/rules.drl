@@ -446,26 +446,18 @@ then
 insert(fact);
 end
 
-
-
 rule "I love chrome and loud shirts"
 when
     p:Fact(answer=="I prefer the style") and Fact(question=="Why do you want a classic?")
      s:Fact(answer=="I love chrome and loud shirts") and Fact(question=="Ok, what kind of style?")
 then
          Car car = new Car();
-
          car.setName("'57 Chevy Bel Air");
-
          List cars = new ArrayList();
          cars.add(car);
-
-
          createInformationDialog(cars);
          insert(car);
 end
-
-
 
 rule "Really slow cars that look fast"
 when
@@ -491,12 +483,6 @@ then
          insert(car3);
 end
 
-
-
-
-
-
-
 rule "Love brass and lanterns"
 when
     p:Fact(answer=="I prefer the style") and Fact(question=="Why do you want a classic?")
@@ -505,7 +491,6 @@ then
          Car car = new Car();
          Car car2=new Car();
 
-
          car.setName("Anything Pre WWI");
          car2.setName("Maybe a Packard?");
 
@@ -513,17 +498,10 @@ then
          cars.add(car);
          cars.add(car2);
 
-
          createInformationDialog(cars);
          insert(car);
          insert(car2);
 end
-
-
-
-
-
-
 
 rule "Working class hero, also beer"
 when    p:Fact(answer=="I prefer the style") and Fact(question=="Why do you want a classic?")
@@ -537,9 +515,6 @@ then          Car car = new Car();
               createInformationDialog(cars);
               insert(car);
 end
-
-
-
 
 rule "Classic German with a touch of pedal confusion"
 when    p:Fact(answer=="I prefer the style") and Fact(question=="Why do you want a classic?")
@@ -555,13 +530,11 @@ then
          insert(car);
 end
 
-
 rule "Client who can only drive cars that are museum-worthy"
 when
      p:Fact(answer=="I prefer the style") and Fact(question=="Why do you want a classic?")
          b:Fact(answer=="I can only drive cars that are museum-worthy") and Fact(question=="Ok, what kind of style?")
 then
-
          Car car = new Car();
          Car car2=new Car();
          Car car3 =new Car();
@@ -597,9 +570,6 @@ then
     fact.setAnswer(getUserChoice(dialog));
     fact.setQuestion(nextQuestion);
     insert(fact);
-
-
-
 end
 
 rule "I want to know how cars work"
@@ -615,7 +585,6 @@ then
         fact.setAnswer(getUserChoice(dialog));
         fact.setQuestion(nextQuestion);
         insert(fact);
-
 end
 
 rule "More archaic"
@@ -623,7 +592,6 @@ when
      p:Fact(answer=="I want to know how cars work") and Fact(question=="Oh yeah? Why's that?")
      f:Fact(answer=="Reliability and convenience bore me") and Fact (question=="Why do you want a classic?")
       c:Fact(answer=="More archaic") and Fact (question=="So, something really simple?")
-
 then
          Car car = new Car();
          car.setName("Ford Model T");
@@ -646,6 +614,7 @@ then
          createInformationDialog(cars);
          insert(car);
 end
+
 rule "Sounds good"
 when
                p:Fact(answer=="I want to know how cars work") and Fact(question=="Oh yeah? Why's that?")
@@ -674,42 +643,29 @@ end
 
 rule "I'm erotically drawn to tow trucks and freeway shoulders"
 no-loop
-when p:Fact(answer=="I'm erotically drawn to tow trucks and freeway shoulders")
-     c: Client(cares_about=="Reliability and convenience bore me")
+when  p:Fact(answer=="I'm erotically drawn to tow trucks and freeway shoulders") and Fact(question=="Oh yeah? Why's that?")
+      f:Fact(answer=="Reliability and convenience bore me") and Fact (question=="Why do you want a classic?")
 then
-     String[] myanswers = new String[] {"YES"};
-        List choices = Arrays.asList(myanswers);
-        String nextQuestion="Also really lovely";
-         c.setWhyReliabilityBoreHim(p.getAnswer());
+        String nextQuestion="OK. Should it be pretty quick?";
+        System.out.println("QUESTION: "+nextQuestion);
           Car car = new Car();
           car.setName("Lotus Elan");
          List cars = new ArrayList();
          cars.add(car);
-         ChoiceDialog dialog = createDialogAuto(choices,nextQuestion, cars);
-          p.setAnswer(getUserChoice(dialog));
-
-    insert(car);
-         update(p);
-         update(c);
-
+         String nextAnswer = createDialogWithCarAndQuestion(cars,nextQuestion);
+        Fact fact = new Fact();
+        fact.setQuestion(nextQuestion);
+        fact.setAnswer(nextAnswer);
+        insert(fact);
+        insert(car);
 end
 
 rule "Quick and also really lovely"
 no-loop
 when
-p:Fact(answer=="YES")
-     c: Client(cares_about=="Reliability and convenience bore me") and Client(whyReliabilityBoreHim=="I'm erotically drawn to tow trucks and freeway shoulders")
-then
-     c.setShouldItBeQuick(p.getAnswer());
-     update(c);
-end
-
-
-
-rule "Client who wants quick and really lovely car"
-when
-     c: Client(cares_about=="Reliability and convenience bore me") and Client(whyReliabilityBoreHim=="I'm erotically drawn to tow trucks and freeway shoulders")
-     and Client(shouldItBeQuick=="YES")
+p:Fact(answer=="I'm erotically drawn to tow trucks and freeway shoulders") and Fact(question=="Oh yeah? Why's that?")
+      f:Fact(answer=="Reliability and convenience bore me") and Fact (question=="Why do you want a classic?")
+      c: Fact(answer=="YES") and Fact(question=="OK. Should it be pretty quick?")
 then
          Car car = new Car();
          car.setName("Alfa Romeo Giulia Super");
@@ -719,12 +675,9 @@ then
          insert(car);
 end
 
-
-
 //******************************************
 //---------------- I GUESS BLA BLA -----------
 //*******************************************
-
 
 rule "I Guess I'm making some kind of statement about something?"
 no-loop
@@ -1259,18 +1212,6 @@ then
 
 end
 
-
-
-
-
-
-
-
-
-
-
-
-
 //-------------------------------------------------------------------FUNCKJE-------------------------------------------------------------------------------------------------------
 
 //tworzy kolejny dialog na podstawie podanego pytania i listy dostepnych wyborow
@@ -1292,6 +1233,7 @@ function String getUserChoice(ChoiceDialog dialog){
         }
         return wynik.get();
 }
+//funkcaj tworzaca dialog koncowy z odpowiedziami
 function void createInformationDialog(List cars) {
 Alert alert = new Alert(Alert.AlertType.INFORMATION);
 alert.setTitle("Information Dialog");
@@ -1304,6 +1246,7 @@ information+="Car: " + car.getName()+"\n";
 alert.setContentText(information);
 alert.showAndWait();
 }
+//funkcja do wyrzucenia
 function ChoiceDialog createDialogAuto(List myChoices,String nextQuestion, List cars){
     ChoiceDialog<String> dialog = new ChoiceDialog<>(myChoices.get(0).toString(), myChoices);
     dialog.setTitle("Car Asisstant");
@@ -1315,8 +1258,8 @@ function ChoiceDialog createDialogAuto(List myChoices,String nextQuestion, List 
     dialog.setHeaderText(information);
     dialog.setContentText(nextQuestion);
     return dialog;
-
 }
+//funkcja tworzaca dialog gdzie znalezlismy odpowiedz ale mamy do zadania jeszcze dodatkowe pytanie z jedna odpowiedzia
 function String createDialogWithCarAndQuestion(List cars,String nextQuestion){
 String nextAnswer="";
 
@@ -1341,32 +1284,25 @@ info.setFont(new Font("Cambria", 20));
 info.setTextFill(Color.web("#228B22"));
  grid.add(info,0,0);
 
-
  Label question = new Label();
  question.setText("Question: " + nextQuestion);
 question.setFont(new Font("Cambria", 20));
 question.setTextFill(Color.web("#DC143C"));
  grid.add(question,3,3);
 
-
 alert.getDialogPane().getButtonTypes().removeAll(ButtonType.OK,ButtonType.CANCEL);
 ButtonType next = new ButtonType("Yes",ButtonBar.ButtonData.OK_DONE);
 ButtonType finish= new ButtonType("No, Finish",ButtonBar.ButtonData.OK_DONE);
 
 alert.getDialogPane().getButtonTypes().addAll(next,finish);
-
-
 alert.getDialogPane().setContent(grid);
-
 
 Optional<ButtonType> result = alert.showAndWait();
 if (result.get() == next){
 nextAnswer="YES";
-
 }
 else
 nextAnswer="NO";
-
 System.out.println("ANSWER: " + nextAnswer + "\n");
 return  nextAnswer;
 }
