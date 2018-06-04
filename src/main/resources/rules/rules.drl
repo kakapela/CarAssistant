@@ -27,26 +27,10 @@ import javafx.scene.control.Button
 import javafx.event.EventHandler
 import javafx.scene.input.MouseEvent
 import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer
+import java.lang.reflect.Array
 
 
 //======================================================================================DEKLARACJE KLAS=================================================================
-declare Client
-    cares_about : String
-    meaningOfSoul: String
-    kindOfStyle: String
-    statement:String
-    whyTechnicallyNovel: String
-    whyReliabilityBoreHim: String
-    shouldItBeQuick: String
-    whySofa: String
-    reallyFastCar: String
-    noStyleForCar: String
-    whySpeed: String
-    whyDeath: String
-    whyLoveSpeed: String
-end
-
-
 
 declare Fact
  answer: String
@@ -235,8 +219,8 @@ end
 
 
 
-rule "Client Soul is the ability to go a million miles with Su Carbs and Lucas Electrics"
-when p:Fact( answer =="Client Soul is the ability to go a million miles with Su Carbs and Lucas Electrics") and Fact(question=="What does soul mean to you?")
+rule "Soul is the ability to go a million miles with Su Carbs and Lucas Electrics"
+when p:Fact( answer =="Soul is the ability to go a million miles with Su Carbs and Lucas Electrics") and Fact(question=="What does soul mean to you?")
      f:Fact(answer=="New cars have no soul") and Fact (question=="Why do you want a classic?")
 then
          Car car = new Car();
@@ -278,7 +262,6 @@ then
          insert(car2);
 end
 
-//----------------------------------------------------------------------------
 rule "Technically novel"
 no-loop
 when p:Fact( answer =="Technically novel") and Fact(question=="What does soul mean to you?")
@@ -348,10 +331,10 @@ then
 end
 
 
-rule "Client Can burn cooking oil"
+rule "Can burn cooking oil"
 when p:Fact( answer =="Technically novel") and Fact(question=="What does soul mean to you?")
      f:Fact(answer=="New cars have no soul") and Fact (question=="Why do you want a classic?")
-     d:Fact(answer=="Client Can burn cooking oil") and Fact(question=="Like what?")
+     d:Fact(answer=="Can burn cooking oil") and Fact(question=="Like what?")
 then
          Car car = new Car();
 
@@ -423,6 +406,7 @@ then
                  cars.add(car);
                  createInformationDialog(cars);
                  insert(car);
+
 
 end
 
@@ -503,18 +487,72 @@ then
          insert(car2);
 end
 
+
+
+
+
+
 rule "Working class hero, also beer"
 when    p:Fact(answer=="I prefer the style") and Fact(question=="Why do you want a classic?")
          b:Fact(answer=="Working class hero, also beer") and Fact(question=="Ok, what kind of style?")
-then          Car car = new Car();
+then
+   Car car = new Car();
               car.setName("Ford Mustang");
-
               List cars = new ArrayList();
-              cars.add(car);
+               cars.add(car);
+              String nextQuestion="Does your hat say you'd rather push a chevy?";
+              List choices = new ArrayList();
+              choices.add("So it does, friend");
+              choices.add("Dammit, I lost my hat");
+              System.out.println("QUESTION: " + nextQuestion);
 
-              createInformationDialog(cars);
+
+
+              ChoiceDialog dialog = createDialogAuto(choices,nextQuestion, cars);
+
+
+
+                  Fact fact = new Fact();
+                  fact.setAnswer(getUserChoice(dialog));
+                  fact.setQuestion(nextQuestion);
+              insert(fact);
               insert(car);
 end
+
+rule "Dammit, I lost my hat"
+when    p:Fact(answer=="I prefer the style") and Fact(question=="Why do you want a classic?")
+         b:Fact(answer=="Working class hero, also beer") and Fact(question=="Ok, what kind of style?")
+           c:Fact(answer=="Dammit, I lost my hat") and Fact(question=="Ok, what kind of style?")
+then
+         Car car = new Car();
+
+         car.setName("AMC AMX");
+         List cars = new ArrayList();
+         cars.add(car);
+
+         createInformationDialog(cars);
+         insert(car);
+end
+
+
+rule "So it does, friend"
+when    p:Fact(answer=="I prefer the style") and Fact(question=="Why do you want a classic?")
+         b:Fact(answer=="Working class hero, also beer") and Fact(question=="Ok, what kind of style?")
+           c:Fact(answer=="So it does, friend") and Fact(question=="Ok, what kind of style?")
+then
+         Car car = new Car();
+
+         car.setName("Chevy Camaro");
+         List cars = new ArrayList();
+         cars.add(car);
+
+         createInformationDialog(cars);
+         insert(car);
+end
+
+
+
+
 
 rule "Classic German with a touch of pedal confusion"
 when    p:Fact(answer=="I prefer the style") and Fact(question=="Why do you want a classic?")
@@ -530,7 +568,7 @@ then
          insert(car);
 end
 
-rule "Client who can only drive cars that are museum-worthy"
+rule "I can only drive cars that are museum-worthy"
 when
      p:Fact(answer=="I prefer the style") and Fact(question=="Why do you want a classic?")
          b:Fact(answer=="I can only drive cars that are museum-worthy") and Fact(question=="Ok, what kind of style?")
@@ -542,7 +580,6 @@ then
          car.setName("Citroen DS");
          car2.setName("Lamborghini Miura");
          car3.setName("Cord 812");
-
          List cars = new ArrayList();
          cars.add(car);
          cars.add(car2);
@@ -701,7 +738,7 @@ fact.setQuestion(nextQuestion);
 insert(fact);
 end
 
-//1
+
 rule "I'm really rich but like to pretend I'm still a hippie"
 no-loop
 when
@@ -754,7 +791,7 @@ then
          createInformationDialog(cars);
          insert(car);
 end
-//5
+
 rule "I will only drive vehicles with two distinct luggage areas"
 no-loop
 when
@@ -901,7 +938,7 @@ then
          createInformationDialog(cars);
          insert(car);
 end
-//10
+
 rule "I like being part of a massive automotive subculture"
 when   p:Fact(answer=="I like being part of a massive automotive subculture") and Fact(question=="Great. What statement?")
        f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
@@ -930,10 +967,10 @@ then
          insert(car4);
          insert(car5);
 end
-//11
-rule "Client -I hate people knowing what i drive"
+
+rule "I hate people knowing what i drive"
 when
-    p:Fact(answer=="Client -I hate people knowing what i drive") and Fact(question=="Great. What statement?")
+    p:Fact(answer=="I hate people knowing what i drive") and Fact(question=="Great. What statement?")
      f:Fact(answer=="I Guess I'm making some kind of statement about something?") and Fact (question=="Why do you want a classic?")
 then
          Car car = new Car();
@@ -951,7 +988,7 @@ then
          insert(car2);
          insert(car3);
 end
-//12
+
 rule "I kinda wanted a motorcycle but i have no balance"
 when
         p:Fact(answer=="I kinda wanted a motorcycle but i have no balance") and Fact(question=="Great. What statement?")
@@ -964,7 +1001,6 @@ then
          createInformationDialog(cars);
          insert(car);
 end
-//**************************************************************************** FINISHED ' I GUESS ' PATH *******************************************************************************
 
 //*******************************************************************************************************
 //Love speed hate safety
