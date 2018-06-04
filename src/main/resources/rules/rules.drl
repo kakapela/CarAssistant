@@ -26,9 +26,7 @@ import javafx.scene.control.CheckBox
 import javafx.scene.control.Button
 import javafx.event.EventHandler
 import javafx.scene.input.MouseEvent
-import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer
 import java.lang.reflect.Array
-
 
 //======================================================================================DEKLARACJE KLAS=================================================================
 
@@ -40,7 +38,6 @@ end
 declare Car
     name: String
 end
-
 
 //==================================================================================== RULES ==============================================================================
 
@@ -59,14 +56,9 @@ fact1.setAnswer(getUserChoice(dialog));
 insert(fact1);
 end
 
-
-
-
 //***************************
 //HAVE NO SOUL
 //***************************
-
-
 
 rule "New cars have no soul"
 no-loop
@@ -83,10 +75,6 @@ fact2.setAnswer(getUserChoice(dialog));
 
 insert(fact2);
 end
-
-
-
-
 
 rule "Synonym for weird"
 no-loop
@@ -111,9 +99,7 @@ then
          insert(car);
          insert(car2);
          insert(car3);
-
 end
-
 
 
 rule "Easy: ability to drive off a pier into an Estuary"
@@ -126,15 +112,8 @@ then
         insert(car);
         List cars = new ArrayList();
         cars.add(car);
-
-
         createInformationDialog(cars);
 end
-
-
-
-
-
 
 rule "Soul means the Car had an honest job, like a Cop or Cobbie"
 when p:Fact( answer =="Soul means the Car had an honest job, like a Cop or Cobbie") and Fact(question=="What does soul mean to you?")
@@ -143,8 +122,6 @@ then
          Car car = new Car();
          Car car2 = new Car();
          Car car3 = new Car();
-
-
          car.setName("Ford Crown VIC");
          car2.setName("Dodge Monaco");
          car3.setName("Chevy Caprice");
@@ -154,87 +131,50 @@ then
          cars.add(car2);
          cars.add(car3);
 
-
-
          createInformationDialog(cars);
          insert(car);
          insert(car2);
          insert(car3);
 end
 
-
-
-
-
 rule "It means the Car is often starring in Movies"
 when p:Fact( answer =="It means the Car is often starring in Movies") and Fact(question=="What does soul mean to you?")
      f:Fact(answer=="New cars have no soul") and Fact (question=="Why do you want a classic?")
 then
          Car car = new Car();
-
-
          car.setName("Delorean DMC-12");
-
-
          List cars = new ArrayList();
          cars.add(car);
-
-
-
          createInformationDialog(cars);
          insert(car);
 end
-
-
-
 
 rule "Soul is the spirits of 43 dead clowns haunting the Car"
 when p:Fact( answer =="Soul is the spirits of 43 dead clowns haunting the Car") and Fact(question=="What does soul mean to you?")
      f:Fact(answer=="New cars have no soul") and Fact (question=="Why do you want a classic?")
 then
          Car car = new Car();
-
-
          car.setName("Nash Metropolitian");
-
-
          List cars = new ArrayList();
          cars.add(car);
-
-
-
          createInformationDialog(cars);
          insert(car);
 end
-
-
-
 
 rule "Soul is the ability to go a million miles with Su Carbs and Lucas Electrics"
 when p:Fact( answer =="Soul is the ability to go a million miles with Su Carbs and Lucas Electrics") and Fact(question=="What does soul mean to you?")
      f:Fact(answer=="New cars have no soul") and Fact (question=="Why do you want a classic?")
 then
          Car car = new Car();
-
-
          car.setName("Volvo P1800");
-
-
          List cars = new ArrayList();
          cars.add(car);
-
-
-
          createInformationDialog(cars);
          insert(car);
-
 end
 
-
-
-
 rule "It could mean pure Evil?"
-when p:Fact( answer =="It could mean pure Evil") and Fact(question=="What does soul mean to you?")
+when p:Fact( answer =="It could mean pure Evil?") and Fact(question=="What does soul mean to you?")
      f:Fact(answer=="New cars have no soul") and Fact (question=="Why do you want a classic?")
 then
          Car car = new Car();
@@ -273,32 +213,20 @@ then
 insert(fact);
 end
 
-
-
-
 rule "Instead of pistons, some metal Hamantaschen"
 when p:Fact( answer =="Technically novel") and Fact(question=="What does soul mean to you?")
      f:Fact(answer=="New cars have no soul") and Fact (question=="Why do you want a classic?")
      d:Fact(answer=="Instead of pistons, some metal Hamantaschen") and Fact(question=="Like what?")
 then
          Car car = new Car();
-
-
          car.setName("Mazda RX7");
-
-
          List cars = new ArrayList();
          cars.add(car);
-
-
 
          createInformationDialog(cars);
          insert(car);
 
 end
-
-
-
 
 rule "Engine in the wrong place (maybe cooled by wrong Stuff)"
 when p:Fact( answer =="Technically novel") and Fact(question=="What does soul mean to you?")
@@ -359,9 +287,6 @@ then
 
 end
 
-
-
-
 rule "It means riding in it is like sitting on a Sofa"
 no-loop
 when  f:Fact(answer=="New cars have no soul") and Fact (question=="Why do you want a classic?")
@@ -370,6 +295,7 @@ p:Fact( answer =="It means riding in it is like sitting on a Sofa") and Fact(que
 then
 
     String nextQuestion="A huge, fast FWD Sofa?";
+    System.out.println("ANSWER: "+nextQuestion);
     Car car = new Car();
 
     car.setName("Lincoln Town Car");
@@ -383,7 +309,6 @@ then
 insert(car);
 insert(fact);
 end
-
 
 rule "A huge, fast FWD Sofa?"
 no-loop
@@ -400,9 +325,6 @@ then
 
 
 end
-
-
-
 //***************************
 //PREFER STYLE
 //***************************
@@ -478,11 +400,6 @@ then
          insert(car2);
 end
 
-
-
-
-
-
 rule "Working class hero, also beer"
 when    p:Fact(answer=="I prefer the style") and Fact(question=="Why do you want a classic?")
          b:Fact(answer=="Working class hero, also beer") and Fact(question=="Ok, what kind of style?")
@@ -496,8 +413,6 @@ then
               choices.add("So it does, friend");
               choices.add("Dammit, I lost my hat");
               System.out.println("QUESTION: " + nextQuestion);
-
-
 
               ChoiceDialog dialog = createDialogAuto(choices,nextQuestion, cars);
 
@@ -540,10 +455,6 @@ then
          createInformationDialog(cars);
          insert(car);
 end
-
-
-
-
 
 rule "Classic German with a touch of pedal confusion"
 when    p:Fact(answer=="I prefer the style") and Fact(question=="Why do you want a classic?")
@@ -1012,8 +923,6 @@ fact.setQuestion(nextQuestion);
 insert(fact);
 end
 
-
-
 rule "Fake is fine"
 no-loop
 when p:Fact(answer=="Fake is fine") and Fact (question=="Real speed or just feels spedy?")
@@ -1023,8 +932,6 @@ then
          Car car2 = new Car();
          Car car3 = new Car();
          Car car4 = new Car();
-
-
          car.setName("Datsun S10");
          car2.setName("Mini Cooper");
          car3.setName("Mk1 VW Golf GTI");
@@ -1035,8 +942,6 @@ then
          cars.add(car2);
          cars.add(car3);
          cars.add(car4);
-
-
 
          createInformationDialog(cars);
          insert(car);
@@ -1051,21 +956,11 @@ when p:Fact(answer=="Fast and cheap") and Fact (question=="Real speed or just fe
           f:Fact(answer=="Love speed hate safety") and Fact (question=="Why do you want a classic?")
 then
          Car car = new Car();
-
-
-
          car.setName("Dodge Omni GLH");
-
-
          List cars = new ArrayList();
          cars.add(car);
-
-
-
-
          createInformationDialog(cars);
          insert(car);
-
 end
 
 
@@ -1086,7 +981,6 @@ then
          insert(fact);
 end
 
-
 rule "Crushed by V8 in tiny space"
 when  p:Fact(answer=="I have a death wish") and Fact (question=="Real speed or just feels spedy?")
           f:Fact(answer=="Love speed hate safety") and Fact (question=="Why do you want a classic?")
@@ -1101,8 +995,6 @@ then
 
 end
 
-
-
 rule "Electrocuted by wiper switch"
 when p:Fact(answer=="I have a death wish") and Fact (question=="Real speed or just feels spedy?")
                f:Fact(answer=="Love speed hate safety") and Fact (question=="Why do you want a classic?")
@@ -1114,7 +1006,6 @@ then
          cars.add(car);
          createInformationDialog(cars);
          insert(car);
-
 end
 
 
@@ -1164,7 +1055,6 @@ then
          createInformationDialog(cars);
          insert(car);
          insert(car2);
-
 end
 
 
@@ -1173,8 +1063,6 @@ no-loop
 when p:Fact(answer=="I love speed and money") and Fact (question=="Real speed or just feels spedy?")
          f:Fact(answer=="Love speed hate safety") and Fact (question=="Why do you want a classic?")
 then
-
-
          String[] myanswers = new String[] {"Some kind of Duke and I rally","My goal is to drive my Childhood bedroom posters","I have a weird Fetish where I like people asking Is it a Replica?"};
          List choices = Arrays.asList(myanswers);
          String nextQuestion="Great, who are you?";
@@ -1183,8 +1071,6 @@ then
          fact.setQuestion(nextQuestion);
          fact.setAnswer(getUserChoice(dialog));
          insert(fact);
-
-
 end
 
 rule "Some kind of Duke and I rally"
@@ -1236,7 +1122,6 @@ then
          createInformationDialog(cars);
          insert(car);
          insert(car2);
-
 end
 
 //-------------------------------------------------------------------FUNCKJE-------------------------------------------------------------------------------------------------------
@@ -1273,7 +1158,6 @@ information+="Car: " + car.getName()+"\n";
 alert.setContentText(information);
 alert.showAndWait();
 }
-//funkcja do wyrzucenia
 function ChoiceDialog createDialogAuto(List myChoices,String nextQuestion, List cars){
     ChoiceDialog<String> dialog = new ChoiceDialog<>(myChoices.get(0).toString(), myChoices);
     dialog.setTitle("Car Asisstant");
