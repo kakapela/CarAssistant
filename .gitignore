@@ -53,10 +53,7 @@ logs/
 .idea/
 *.iml
 
-# Eclipse
-.project
-.classpath
-.settings
+
 
 # Netbeans
 nbactions*.xml
